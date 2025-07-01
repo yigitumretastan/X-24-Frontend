@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 x24-web-next - Next.js Projesi
 
-## Getting Started
+Bu proje, Next.js 13 ile geliştirilmiş modern, modüler bir web uygulamasıdır.  
+Kullanıcı kimlik doğrulama, dashboard, takvim, mesajlaşma gibi modülleri içerir.  
+Proje yapısı **app directory (app/)** kullanılarak organize edilmiştir.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🗂 Proje Klasör Yapısı
+```
+x24-web-next/
+├── public/ # Statik dosyalar (resimler, ikonlar vb.)
+├── src/
+│ └── app/ # Next.js sayfaları ve modüller
+│ ├── auth/ # Giriş ve kayıt sayfaları
+│ ├── dashboard/ # Dashboard ve alt bileşenler
+│ ├── lib/ # Yardımcı kütüphaneler (socket.ts vb.)
+│ ├── utils/ # Yardımcı fonksiyonlar (cookie yönetimi vb.)
+│ ├── globals.css # Global stil dosyası
+│ └── layout.tsx # Genel layout bileşeni
+├── .env # Ortam değişkenleri
+├── .gitignore # Git takip edilmeyecek dosyalar
+├── alist.txt # (Projeye özel, dikkat edilmesi gereken dosya)
+├── package.json # Bağımlılıklar ve scriptler
+├── README.md # Proje açıklamaları (bu dosya)
+└── tsconfig.json # TypeScript konfigürasyonu
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🧪 Kullanılan Teknolojiler
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Next.js 13** – React tabanlı framework, App Router ile sayfa ve API yönetimi  
+- **TypeScript** – Statik tip denetimi  
+- **React** – UI bileşenleri  
+- **PostCSS** – CSS işleme  
+- **Socket.io (lib/socket.ts)** – Gerçek zamanlı iletişim için kütüphane  
+- **ESLint** – Kod kalitesini sağlamak için linting  
+- **Vercel** – Kolay deploy ve hosting (opsiyonel)
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## ⚙️ Kurulum ve Çalıştırma
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Depoyu klonlayın:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+git clone https://github.com/kullaniciAdi/x24-web-next.git
+cd x24-web-next
 
-## Deploy on Vercel
+    Bağımlılıkları yükleyin:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+npm install
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+    Ortam değişkenlerini .env dosyasına ekleyin (örnek):
+
+NEXT_PUBLIC_API_URL=http://localhost:3000/api
+NEXTAUTH_SECRET=guclu_bir_secret
+
+    Geliştirme modunda çalıştırın:
+
+npm run dev
+
+Tarayıcıda http://localhost:3000 adresini açın.
+📂 Öne Çıkan Özellikler ve Modüller
+
+    Auth: Giriş ve kayıt sayfaları (src/app/auth/)
+
+    Dashboard: Kullanıcı panosu, analiz, mesajlar, takvim, projeler vb. (src/app/dashboard/)
+
+    Gerçek zamanlı iletişim: src/lib/socket.ts üzerinden WebSocket bağlantısı
+
+    Yenilikçi dosya yapısı: Next.js 13 App Router ve modüler dizinler
+
+📬 API ve Veri Yönetimi
+
+    API endpointleri Next.js API Routes ile entegre edilebilir (opsiyonel)
+
+    Çerez yönetimi src/utils/cookies.ts ile yapılmakta
+
+🎯 Projeyi Geliştirmek İçin İpuçları
+
+    Komponentleri src/app/dashboard/components/ içinde modüler şekilde geliştir
+
+    hooks klasörleri özel işlevsellik için React hook’ları içerir
+
+    layout.tsx genel sayfa yapısını yönetir
+
+    .env dosyasındaki gizli anahtarları gizli tut
+
+📄 Lisans
+
+Bu proje MIT Lisansı ile lisanslanmıştır.
