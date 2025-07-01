@@ -1,8 +1,22 @@
 # 🚀 x24-web-next - Next.js Projesi
 
-Bu proje, Next.js 13 ile geliştirilmiş modern, modüler bir web uygulamasıdır.  
-Kullanıcı kimlik doğrulama, dashboard, takvim, mesajlaşma gibi modülleri içerir.  
-Proje yapısı **app directory (app/)** kullanılarak organize edilmiştir.
+Bu proje, modern ekip ve iş yönetimi ihtiyaçlarını karşılamak üzere geliştirilmiş kapsamlı bir web uygulamasıdır. Kullanıcıların proje yönetimi, görev takibi, takvim organizasyonu, mesajlaşma ve raporlama gibi temel iş akışlarını kolayca gerçekleştirebileceği modüler yapıya sahiptir.
+
+Proje, kullanıcı dostu arayüzü ve gerçek zamanlı iletişim özellikleri sayesinde ekiplerin verimliliğini artırmayı hedefler. Gelişmiş yetkilendirme ve erişim kontrolleriyle her kullanıcının rolüne uygun işlevsellik sunar.
+
+Ana özellikler:
+
+    Kullanıcı kimlik doğrulama ve rol yönetimi
+
+    Görev oluşturma, düzenleme ve takip
+
+    Takvim entegrasyonu ile etkinlik planlama
+
+    Gerçek zamanlı mesajlaşma ve bildirimler
+
+    Dashboard üzerinden detaylı analiz ve raporlama
+
+Projede modern web teknolojileri ve esnek mimari kullanılarak, ölçeklenebilir ve sürdürülebilir bir platform oluşturulmuştur.
 
 ---
 
