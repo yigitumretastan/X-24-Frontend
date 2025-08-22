@@ -2,10 +2,11 @@
 
 import React, { useState } from "react";
 import ProfilModal from "./components/ProfilModal";
+import InviteModal from "./components/InviteModal";
 
 export default function Header() {
   const [modalOpen, setModalOpen] = useState(false);
-
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const toggleModal = () => setModalOpen((prev) => !prev);
   const closeModal = () => setModalOpen(false);
 
@@ -18,18 +19,27 @@ export default function Header() {
         </div>
 
         {/* Sağ üst bölüm */}
-        <div className="flex items-center space-x-4 relative">
-          {/* Davet Et Butonu */}
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center space-x-2">
-            <span>👥</span>
-            <span>Davet Et</span>
-          </button>
+        <div className="flex items-center space-x-4">
+          {/* Davet Et Butonu + Modal */}
+          <div className="relative">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center space-x-2"
+            >
+              <span>👥</span>
+              <span>Davet Et</span>
+            </button>
+            <InviteModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+            />
+          </div>
+
           {/* Profil (button olarak) */}
           <button
             onClick={toggleModal}
             className="flex items-center space-x-3 relative focus:outline-none"
           >
-            {/* Modal */}
             {modalOpen && <ProfilModal onClose={closeModal} />}
             <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
               <span className="text-sm font-medium text-gray-700">KA</span>
