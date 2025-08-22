@@ -1,40 +1,18 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React from "react";
 
 interface InviteModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
-
-const api = axios.create({
-  baseURL: baseUrl,
-  timeout: 10000,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-// Örnek async fonksiyon kullanımı:
-async function registerUser() {
-  try {
-    const response = await api.post("/auth/register");
-    console.log(response.data);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 const InviteModal: React.FC<InviteModalProps> = ({ isOpen, onClose }) => {
-  const [showShareOptions, setShowShareOptions] = useState(false);
-  const inviteCode = `https://X-24.com/invite/12345`; // Örnek invite kodu
+  const inviteCode = `https://X-24.com/invite/12345`; 
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(inviteCode);
       alert("Davet linki kopyalandı!");
-    } catch (err) {
+    } catch {
       alert("Kopyalama işlemi başarısız oldu.");
     }
   };
