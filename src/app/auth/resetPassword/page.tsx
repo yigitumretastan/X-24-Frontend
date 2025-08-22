@@ -38,12 +38,20 @@ export default function ResetPasswordPage() {
         email,
         token,
         newPassword: password,
+        confirmPassword: confirmPassword
       });
 
       router.push("/auth/login"); 
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err?.response?.data?.message || "Bir hata oluştu");
+
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || "Bir hata oluştu");
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Bilinmeyen bir hata oluştu");
+      }
     } finally {
       setLoading(false);
     }
