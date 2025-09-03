@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { getCookie, setCookie } from "@/app/utils/cookies";
 import axios, { AxiosError } from 'axios';
 
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://localhost:7171';
 
 const api = axios.create({
   baseURL: baseUrl,
@@ -16,22 +16,20 @@ const api = axios.create({
 
 interface RegisterData {
   name: string;
-  lastname: string;
+  lastName: string;
   email: string;
-  password: string;
   phone: string;
-  companyName: string;
-  inviteCode: string;
+  password: string;
+  confirmPassword: string;
 }
 
 interface FormErrors {
   name: string;
-  lastname: string;
+  lastName: string;
   email: string;
   phone: string;
   password: string;
-  companyName: string;
-  inviteCode: string;
+  confirmPassword: string;
 }
 
 interface ApiErrorResponse {
@@ -39,42 +37,37 @@ interface ApiErrorResponse {
 }
 
 interface RegisterResponse {
-  user?: {
-    _id: string;
-    [key: string]: unknown;
-  };
-  workspace?: {
-    [key: string]: unknown;
-  };
+  token?: string;
+  name?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string | null;
   message?: string;
 }
+
 
 export default function RegisterPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [registrationType, setRegistrationType] = useState<"new" | "invite">("new");
 
   const [registerData, setRegisterData] = useState<RegisterData>({
     name: "",
-    lastname: "",
+    lastName: "",
     email: "",
-    password: "",
     phone: "",
-    companyName: "",
-    inviteCode: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const [formErrors, setFormErrors] = useState<FormErrors>({
     name: "",
-    lastname: "",
+    lastName: "",
     email: "",
     phone: "",
     password: "",
-    companyName: "",
-    inviteCode: "",
+    confirmPassword: "",
   });
 
-  // Memoize the redirect function to avoid useEffect dependency issues
   const redirectToDashboard = useCallback(() => {
     router.push("/dashboard");
   }, [router]);
@@ -92,37 +85,21 @@ export default function RegisterPage() {
     setFormErrors((prev) => ({ ...prev, [name]: "" }));
   }
 
-  function handleRegistrationTypeChange(type: "new" | "invite") {
-    setRegistrationType(type);
-    setRegisterData((prev) => ({
-      ...prev,
-      companyName: "",
-      inviteCode: "",
-    }));
-    setFormErrors((prev) => ({
-      ...prev,
-      companyName: "",
-      inviteCode: "",
-    }));
-  }
-
   async function handleRegisterSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
 
     const errors: FormErrors = {
       name: "",
-      lastname: "",
+      lastName: "",
       email: "",
       phone: "",
       password: "",
-      companyName: "",
-      inviteCode: "",
+      confirmPassword: "",
     };
 
     let hasError = false;
 
-    // Validasyonlar
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^[0-9]{10,15}$/;
     const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
@@ -131,8 +108,8 @@ export default function RegisterPage() {
       errors.name = "Ad zorunludur.";
       hasError = true;
     }
-    if (!registerData.lastname.trim()) {
-      errors.lastname = "Soyad zorunludur.";
+    if (!registerData.lastName.trim()) {
+      errors.lastName = "Soyad zorunludur.";
       hasError = true;
     }
     if (!emailRegex.test(registerData.email)) {
@@ -147,12 +124,11 @@ export default function RegisterPage() {
       errors.password = "Şifre en az 6 karakter olmalı, bir büyük harf ve bir rakam içermeli.";
       hasError = true;
     }
-    if (registrationType === "new" && !registerData.companyName.trim()) {
-      errors.companyName = "Şirket adı zorunludur.";
+    if (!registerData.confirmPassword) {
+      errors.confirmPassword = "Şifre tekrar zorunludur.";
       hasError = true;
-    }
-    if (registrationType === "invite" && !registerData.inviteCode.trim()) {
-      errors.inviteCode = "Davet kodu zorunludur.";
+    } else if (registerData.password !== registerData.confirmPassword) {
+      errors.confirmPassword = "Şifreler uyuşmuyor.";
       hasError = true;
     }
 
@@ -164,122 +140,62 @@ export default function RegisterPage() {
 
     const requestData = {
       name: registerData.name,
-      lastname: registerData.lastname,
+      lastName: registerData.lastName,
       email: registerData.email,
       phone: registerData.phone,
       password: registerData.password,
-      ...(registrationType === "new"
-        ? { companyName: registerData.companyName }
-        : { inviteCode: registerData.inviteCode }),
+      confirmPassword: registerData.confirmPassword,
     };
 
     try {
-      // API instance'ını kullan - tutarlı URL için
-      const response = await api.post<RegisterResponse>("/auth/register", requestData);
+      const response = await api.post<RegisterResponse>("/api/auth/register", requestData);
 
-      if (response.data && response.data.user) {
-        const tempToken = response.data.user._id || "access_token";
-        try {
-          setCookie("userToken", tempToken, 7);
-          setCookie("userData", JSON.stringify(response.data.user), 7);
-          if (response.data.workspace) {
-            setCookie("workspaceData", JSON.stringify(response.data.workspace), 7);
-          }
-        } catch (cookieError) {
-          console.warn("Cookie yazma hatası:", cookieError);
-        }
-
+      if (response.data && response.data.token) {
+        setCookie("userToken", response.data.token, 7);
+        setCookie("userData", JSON.stringify({
+          name: response.data.name,
+          lastName: response.data.lastName,
+          email: response.data.email,
+          phone: response.data.phone,
+        }), 7);
         redirectToDashboard();
       } else {
-        setFormErrors((prev) => ({
+        setFormErrors(prev => ({
           ...prev,
           email: response.data?.message || "Kayıt başarısız.",
         }));
       }
+
     } catch (error: unknown) {
-      console.error("Hata detayları:", error);
-
       let errorMessage = "Bilinmeyen bir hata oluştu.";
-      
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError<ApiErrorResponse>;
-        
-        // Detaylı hata logları
-        console.log("Error details:", {
-          code: axiosError.code,
-          message: axiosError.message,
-          response: axiosError.response?.data,
-          status: axiosError.response?.status,
-          config: {
-            url: axiosError.config?.url,
-            baseURL: axiosError.config?.baseURL,
-            method: axiosError.config?.method
-          }
-        });
 
-        if (axiosError.code === 'ERR_NETWORK') {
-          errorMessage = `Ağ hatası: Sunucuya ulaşılamıyor. URL: ${baseUrl}`;
-        } else if (axiosError.code === 'ECONNREFUSED') {
-          errorMessage = "Bağlantı reddedildi. Sunucu çalışıyor mu?";
-        } else if (axiosError.code === 'ETIMEDOUT') {
-          errorMessage = "İstek zaman aşımına uğradı.";
-        } else if (axiosError.response) {
-          errorMessage = axiosError.response.data?.message || `Sunucu hatası: ${axiosError.response.status}`;
+      if (axios.isAxiosError(error)) {
+        if (error.code === 'ERR_NETWORK') {
+          errorMessage = `Ağ hatası: Sunucuya ulaşılamıyor.`;
+        } else if (error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        } else {
+          errorMessage = `Sunucu hatası: ${error.response?.status || 'Bilinmiyor'}`;
         }
       } else if (error instanceof Error) {
         errorMessage = error.message;
       }
 
-      setFormErrors((prev) => ({ ...prev, email: errorMessage }));
-    } finally {
+      setFormErrors(prev => ({ ...prev, email: errorMessage }));
+    }
+    finally {
       setLoading(false);
     }
   }
 
   function handleGoogleRegister() {
-    window.location.href = `${baseUrl}/auth/google`;
+    window.location.href = `${baseUrl}/api/Auth/signin-google`;
   }
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-100 p-8">
       <div className="w-full max-w-md bg-white shadow-md rounded-2xl p-8 text-center">
         <h1 className="text-3xl font-extrabold text-gray-900 mb-4">Kayıt Ol</h1>
-
-        {/* Debug bilgisi - sadece development için */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mb-4 p-2 bg-yellow-100 text-xs text-left text-black">
-            <strong>Debug:</strong> API URL: {baseUrl}
-          </div>
-        )}
-
-        {/* Kayıt Türü Seçimi */}
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg text-black">
-          <h3 className="text-sm font-semibold mb-3">Kayıt Türü</h3>
-          <div className="flex gap-4">
-            <label className="flex items-center cursor-pointer">
-              <input
-                type="radio"
-                name="registrationType"
-                value="new"
-                checked={registrationType === "new"}
-                onChange={() => handleRegistrationTypeChange("new")}
-                className="mr-2 accent-black"
-              />
-              <span className="text-sm">Yeni Şirket</span>
-            </label>
-            <label className="flex items-center cursor-pointer">
-              <input
-                type="radio"
-                name="registrationType"
-                value="invite"
-                checked={registrationType === "invite"}
-                onChange={() => handleRegistrationTypeChange("invite")}
-                className="mr-2 accent-black"
-              />
-              <span className="text-sm">Davet Kodu</span>
-            </label>
-          </div>
-        </div>
 
         <form onSubmit={handleRegisterSubmit} className="flex flex-col gap-4 text-left">
           {formErrors.name && <p className="text-sm text-red-600">{formErrors.name}</p>}
@@ -289,18 +205,16 @@ export default function RegisterPage() {
             placeholder="Ad"
             value={registerData.name}
             onChange={handleInputChange}
-            autoComplete="name"
             className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
           />
 
-          {formErrors.lastname && <p className="text-sm text-red-600">{formErrors.lastname}</p>}
+          {formErrors.lastName && <p className="text-sm text-red-600">{formErrors.lastName}</p>}
           <input
             type="text"
-            name="lastname"
+            name="lastName"
             placeholder="Soyad"
-            value={registerData.lastname}
+            value={registerData.lastName}
             onChange={handleInputChange}
-            autoComplete="family-name"
             className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
           />
 
@@ -311,7 +225,6 @@ export default function RegisterPage() {
             placeholder="E-Mail"
             value={registerData.email}
             onChange={handleInputChange}
-            autoComplete="email"
             className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
           />
 
@@ -322,7 +235,6 @@ export default function RegisterPage() {
             placeholder="Telefon"
             value={registerData.phone}
             onChange={handleInputChange}
-            autoComplete="tel"
             className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
           />
 
@@ -333,37 +245,18 @@ export default function RegisterPage() {
             placeholder="Şifre"
             value={registerData.password}
             onChange={handleInputChange}
-            autoComplete="new-password"
             className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
           />
 
-          {registrationType === "new" && (
-            <>
-              {formErrors.companyName && <p className="text-sm text-red-600">{formErrors.companyName}</p>}
-              <input
-                type="text"
-                name="companyName"
-                placeholder="Şirket Adı"
-                value={registerData.companyName}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
-              />
-            </>
-          )}
-
-          {registrationType === "invite" && (
-            <>
-              {formErrors.inviteCode && <p className="text-sm text-red-600">{formErrors.inviteCode}</p>}
-              <input
-                type="text"
-                name="inviteCode"
-                placeholder="Davet Kodu"
-                value={registerData.inviteCode}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
-              />
-            </>
-          )}
+          {formErrors.confirmPassword && <p className="text-sm text-red-600">{formErrors.confirmPassword}</p>}
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Şifre Tekrar"
+            value={registerData.confirmPassword}
+            onChange={handleInputChange}
+            className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
+          />
 
           <button
             type="submit"
