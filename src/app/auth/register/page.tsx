@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getCookie, setCookie } from "@/app/utils/cookies";
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://localhost:7171';
 
@@ -30,10 +30,6 @@ interface FormErrors {
   phone: string;
   password: string;
   confirmPassword: string;
-}
-
-interface ApiErrorResponse {
-  message?: string;
 }
 
 interface RegisterResponse {
