@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { getCookie, setCookie } from "@/app/utils/cookies";
 
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL|| "https://localhost:7171/";
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL|| "https://localhost:7171";
 
 interface LoginRequest {
   email: string;
@@ -82,7 +82,7 @@ export default function LoginPage() {
         return;
       }
 
-      const response = await fetch(`${apiBaseUrl}api/auth/login`, {
+      const response = await fetch(`${apiBaseUrl}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -113,7 +113,7 @@ export default function LoginPage() {
 
     try {
       // İki faktörlü doğrulama kodu yoksa gönder
-      const response = await fetch(`${apiBaseUrl}api/auth/login`, {
+      const response = await fetch(`${apiBaseUrl}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
