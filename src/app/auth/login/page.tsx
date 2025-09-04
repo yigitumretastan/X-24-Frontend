@@ -1,20 +1,26 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { getCookie, setCookie } from "@/app/utils/cookies"; // kendi yazdığın fonksiyonlar
+import { useEffect, useState, useRef } from "react";
+import { getCookie, setCookie } from "@/app/utils/cookies";
 
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL|| "https://localhost:7171/";
 
-interface LoginData {
-  emailOrPhone: string;
+interface LoginRequest {
+  email: string;
+  phone: string;
   password: string;
-  rememberMe: boolean;
+  twoFactorCode?: string;
 }
 
 interface LoginResponse {
   token?: string;
   message?: string;
+  twoFactorRequired?: boolean;
+  name?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string | null;
 }
 
 export default function LoginPage() {
@@ -22,11 +28,18 @@ export default function LoginPage() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [loginData, setLoginData] = useState<LoginData>({
-    emailOrPhone: "",
+  const [twoFactorRequired, setTwoFactorRequired] = useState(false);
+
+  const [loginData, setLoginData] = useState<LoginRequest>({
+    email: "",
+    phone: "",
     password: "",
-    rememberMe: false,
   });
+
+  // 2FA kodu 6 karakterden oluşacak
+  const [twoFactorCode, setTwoFactorCode] = useState<string[]>(["", "", "", "", "", ""]);
+
+  const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   useEffect(() => {
     const token = getCookie("userToken");
@@ -36,12 +49,61 @@ export default function LoginPage() {
   }, [router]);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setLoginData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: value,
     }));
     if (error) setError("");
+  }
+
+  // 2FA inputlarında otomatik focus ve kontrol
+  function handleTwoFactorChange(e: React.ChangeEvent<HTMLInputElement>, idx: number) {
+    const val = e.target.value;
+    if (!/^\d?$/.test(val)) return; // sadece rakam ve 0-1 karakter olsun
+    const newCode = [...twoFactorCode];
+    newCode[idx] = val;
+    setTwoFactorCode(newCode);
+    if (val && idx < 5) {
+      inputRefs.current[idx + 1]?.focus();
+    }
+  }
+
+  // 2FA kodunu backend'e gönderip doğrula
+  async function verifyTwoFactor() {
+    setLoading(true);
+    setError("");
+
+    try {
+      const code = twoFactorCode.join("");
+      if (code.length !== 6) {
+        setError("Lütfen 6 haneli doğrulama kodunu giriniz.");
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch(`${apiBaseUrl}api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ ...loginData, twoFactorCode: code }),
+      });
+
+      const data: LoginResponse = await response.json();
+
+      if (response.ok && data.token) {
+        setCookie("userToken", data.token, 7);
+        router.push("/dashboard");
+      } else {
+        setError(data.message || "Doğrulama başarısız.");
+      }
+    } catch (err) {
+      setError("Sunucu hatası.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleLoginSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -50,46 +112,32 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-      const response = await fetch(`${apiBaseUrl}/auth/login`, {
+      // İki faktörlü doğrulama kodu yoksa gönder
+      const response = await fetch(`${apiBaseUrl}api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
         body: JSON.stringify(loginData),
-        signal: controller.signal,
       });
-
-      clearTimeout(timeoutId);
-
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("Server did not return JSON response");
-      }
 
       const data: LoginResponse = await response.json();
 
-      if (response.ok && data.token) {
-        // kendi yazdığın setCookie fonksiyonu
-        setCookie("userToken", data.token, loginData.rememberMe ? 7 : 1);
-        router.push("/dashboard");
-      } else {
-        setError(data.message || "Login failed.");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      if (error instanceof Error) {
-        if (error.name === "AbortError") {
-          setError("İstek zaman aşımına uğradı.");
+      if (response.ok) {
+        if (data.twoFactorRequired) {
+          setTwoFactorRequired(true);
+        } else if (data.token) {
+          setCookie("userToken", data.token, 7);
+          router.push("/dashboard");
         } else {
-          setError(error.message || "Sunucu hatası.");
+          setError(data.message || "Giriş başarısız.");
         }
       } else {
-        setError("Bilinmeyen bir hata oluştu.");
+        setError(data.message || "Giriş başarısız.");
       }
+    } catch (error) {
+      setError("Sunucu hatası.");
     } finally {
       setLoading(false);
     }
@@ -110,46 +158,77 @@ export default function LoginPage() {
           </div>
         )}
 
-        <form onSubmit={handleLoginSubmit} className="flex flex-col gap-5">
-          <input
-            type="text"
-            name="emailOrPhone"
-            placeholder="E-Mail or Phone"
-            value={loginData.emailOrPhone}
-            onChange={handleInputChange}
-            required
-            disabled={loading}
-            className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={loginData.password}
-            onChange={handleInputChange}
-            required
-            disabled={loading}
-            className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
-          />
-          <label className="inline-flex items-center gap-2 text-gray-700">
+        {!twoFactorRequired && (
+          <form onSubmit={handleLoginSubmit} className="flex flex-col gap-5">
             <input
-              type="checkbox"
-              name="rememberMe"
-              checked={loginData.rememberMe}
+              type="email"
+              name="email"
+              placeholder="E-Mail"
+              value={loginData.email}
+              onChange={handleInputChange}
+              required
+              disabled={loading}
+              className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
+            />
+            <input
+              type="text"
+              name="phone"
+              placeholder="Phone (optional)"
+              value={loginData.phone}
               onChange={handleInputChange}
               disabled={loading}
-              className="rounded"
+              className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
             />
-            Remember me
-          </label>
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-indigo-600 text-white py-3 rounded-md hover:bg-indigo-700 transition"
-          >
-            {loading ? "Logging in..." : "Login"}
-          </button>
-        </form>
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={loginData.password}
+              onChange={handleInputChange}
+              required
+              disabled={loading}
+              className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-indigo-600 text-white py-3 rounded-md hover:bg-indigo-700 transition"
+            >
+              {loading ? "Logging in..." : "Login"}
+            </button>
+          </form>
+        )}
+
+        {twoFactorRequired && (
+          <div>
+            <p className="mb-4 font-semibold">Lütfen 2 faktörlü doğrulama kodunu giriniz:</p>
+            <div className="flex justify-center gap-2">
+              {[0, 1, 2, 3, 4, 5].map((idx) => (
+                <input
+                  key={idx}
+                  type="text"
+                  maxLength={1}
+                  value={twoFactorCode[idx]}
+                  onChange={(e) => handleTwoFactorChange(e, idx)}
+                  ref={(el) => {
+                    inputRefs.current[idx] = el;
+                  }}
+                  disabled={loading}
+                  className="w-10 h-10 text-center border border-gray-300 rounded-md text-xl"
+                  inputMode="numeric"
+                  pattern="\d*"
+                />
+              ))}
+            </div>
+            <button
+              onClick={verifyTwoFactor}
+              disabled={loading}
+              className="mt-4 bg-indigo-600 text-white py-3 rounded-md hover:bg-indigo-700 transition"
+            >
+              {loading ? "Doğrulanıyor..." : "Doğrula"}
+            </button>
+          </div>
+        )}
 
         <button
           onClick={handleGoogleSignIn}
@@ -159,12 +238,14 @@ export default function LoginPage() {
           Sign in with Google
         </button>
 
-        <p className="mt-4 text-gray-600">
-          Hesabınız yok mu?{" "}
-          <a href="./register" className="text-indigo-600 hover:text-indigo-800 font-semibold">
-            Kayıt Ol
-          </a>
-        </p>
+        {!twoFactorRequired && (
+          <p className="mt-4 text-gray-600">
+            Hesabınız yok mu?{" "}
+            <a href="./register" className="text-indigo-600 hover:text-indigo-800 font-semibold">
+              Kayıt Ol
+            </a>
+          </p>
+        )}
       </div>
     </main>
   );
