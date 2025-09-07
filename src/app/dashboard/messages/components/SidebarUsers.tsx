@@ -51,15 +51,16 @@ export default function SidebarUsers({
   };
 
   const getRandomColor = (name: string) => {
+    // Bu renkler koyu temada biraz daha canlı ve kontrastlı olabilir
     const colors = [
-      "bg-blue-500",
-      "bg-green-500",
-      "bg-yellow-500",
-      "bg-red-500",
-      "bg-purple-500",
-      "bg-indigo-500",
-      "bg-pink-500",
-      "bg-teal-500",
+      "bg-blue-400",
+      "bg-green-400",
+      "bg-yellow-400",
+      "bg-red-400",
+      "bg-purple-400",
+      "bg-indigo-400",
+      "bg-pink-400",
+      "bg-teal-400",
     ];
     const index = name.length % colors.length;
     return colors[index];
@@ -67,38 +68,38 @@ export default function SidebarUsers({
 
   return (
     <aside
-      className="h-full flex flex-col bg-white"
+      className="h-full flex flex-col bg-gray-900"
       style={{ paddingTop: "73px" }}
     >
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900 mb-3">Mesajlar</h2>
+      <div className="p-4 border-b border-gray-700">
+        <h2 className="text-lg font-semibold text-gray-100 mb-3">Mesajlar</h2>
         <SearchBar onSearch={handleSearch} />
       </div>
 
       {/* Notlarım */}
       <div
         onClick={() => onUserSelect("notlarim")}
-        className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
+        className={`p-4 cursor-pointer transition-colors hover:bg-gray-800 ${
           selectedUser === "notlarim"
-            ? "bg-blue-50 border-r-2 border-blue-500"
+            ? "bg-blue-700 border-r-2 border-blue-500"
             : ""
         }`}
       >
         <div className="flex items-center space-x-3">
           <div className="relative">
-            <div className="w-12 h-12 bg-gray-500 rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center">
               <span className="text-sm font-medium text-white">N</span>
             </div>
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-gray-900 truncate">
+              <p className="text-sm font-medium text-gray-100 truncate">
                 Notlarım
               </p>
-              <p className="text-xs text-gray-500">Şimdi</p>
+              <p className="text-xs text-gray-400">Şimdi</p>
             </div>
-            <p className="text-sm text-gray-500 truncate">
+            <p className="text-sm text-gray-400 truncate">
               Kendi notlarını buraya yaz...
             </p>
           </div>
@@ -107,14 +108,14 @@ export default function SidebarUsers({
 
       {/* Kullanıcılar */}
       <div className="flex-1 overflow-y-auto">
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-gray-700">
           {filteredUsers.map((user) => (
             <div
               key={user.id}
               onClick={() => onUserSelect(user.name)}
-              className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
+              className={`p-4 cursor-pointer transition-colors hover:bg-gray-800 ${
                 selectedUser === user.name
-                  ? "bg-blue-50 border-r-2 border-blue-500"
+                  ? "bg-blue-700 border-r-2 border-blue-500"
                   : ""
               }`}
             >
@@ -130,19 +131,19 @@ export default function SidebarUsers({
                     </span>
                   </div>
                   {user.isOnline && (
-                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full" />
+                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-gray-900 rounded-full" />
                   )}
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                    <p className="text-sm font-medium text-gray-100 truncate">
                       {user.name}
                     </p>
-                    <p className="text-xs text-gray-500">{user.timestamp}</p>
+                    <p className="text-xs text-gray-400">{user.timestamp}</p>
                   </div>
                   <div className="flex items-center justify-between">
-                    <p className="text-sm text-gray-500 truncate">
+                    <p className="text-sm text-gray-400 truncate">
                       {user.lastMessage}
                     </p>
                     {user.unreadCount > 0 && (
@@ -159,8 +160,8 @@ export default function SidebarUsers({
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-200">
-        <button className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+      <div className="p-4 border-t border-gray-700">
+        <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
           Yeni Sohbet
         </button>
       </div>

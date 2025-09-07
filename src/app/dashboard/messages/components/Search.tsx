@@ -22,9 +22,9 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
         value={query}
         onChange={(e) => {
           setQuery(e.target.value);
-          onSearch(e.target.value); // her değişimde filtreleme
+          onSearch(e.target.value);
         }}
-        className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white text-black"
+        className="w-full px-4 py-2 pl-10 border border-gray-600 rounded-lg bg-gray-800 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
       />
       <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
     </form>

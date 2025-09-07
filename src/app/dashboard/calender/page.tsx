@@ -1,11 +1,21 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import MonthNavigation from "./components/MonthNavigation";
 import CalendarGrid from "./components/CalendarGrid";
 import TaskModal from "./components/TaskModal";
 import TaskList from "./components/TaskList";
 import QuickAddTask from "./components/QuickAddTask";
 import { useCalendar } from "./hooks/useCalendar";
+
+// Çerezlerden temayı almak için fonksiyon
+function getThemeFromCookies(): "light" | "dark" {
+  if (typeof document === "undefined") return "light"; // Sunucu tarafında çalışıyorsa varsayılan tema 'light'
+  const themeCookie = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("theme="))
+    ?.split("=")[1]; // 'theme' adında bir çerez varsa onu al
+  return themeCookie === "dark" ? "dark" : "light"; // Çerezde 'dark' varsa koyu, yoksa açık tema
+}
 
 export default function CalendarPage() {
   const {
@@ -34,6 +44,12 @@ export default function CalendarPage() {
     daysOfWeek,
   } = useCalendar();
 
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    setTheme(getThemeFromCookies()); // Temayı çerezlerden al
+  }, []);
+
   const handleSubmit = () => {
     if (editingTask) {
       updateTask(editingTask.id, taskForm);
@@ -43,7 +59,8 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-4">
+   <div className={`max-w-5xl mx-auto pt-22 p-4 ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
+
       <MonthNavigation
         currentDate={currentDate}
         months={months}

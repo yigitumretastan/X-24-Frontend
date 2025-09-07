@@ -12,9 +12,9 @@ export default function MessagesPage() {
   };
 
   return (
-    <div className="h-full flex">
+    <div className="h-full flex bg-gray-900 text-gray-100">
       {/* Sol sidebar - kullanıcı listesi */}
-      <div className="w-80 border-r border-gray-200 bg-gray-50">
+      <div className="w-80 border-r border-gray-700 bg-gray-800">
         <SidebarUsers 
           onUserSelect={handleUserSelect} 
           selectedUser={selectedUser}

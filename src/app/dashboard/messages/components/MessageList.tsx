@@ -49,7 +49,6 @@ export default function MessageList({ selectedUser }: MessageListProps) {
     };
   }, [selectedUser]);
 
-  // Dosyayı base64 stringe çeviren yardımcı fonksiyon
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -126,26 +125,20 @@ export default function MessageList({ selectedUser }: MessageListProps) {
 
   if (!selectedUser) {
     return (
-      <div
-        className="h-full flex items-center justify-center"
-        style={{
-          backgroundImage: 'url("/background.png")',
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      ></div>
+      <div className="h-full flex items-center justify-center bg-gray-900 text-white">
+        {/* Background image kaldırıldı */}
+      </div>
     );
   }
 
   return (
     <div
-      className={`h-full flex flex-col relative ${dragActive ? "bg-blue-50" : ""}`}
+      className={`h-full flex flex-col relative ${dragActive ? "bg-blue-50" : "bg-gray-800"}`}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
       {/* 🧠 Sabit Başlık */}
-      <div className="border-b border-gray-200 p-4 bg-white">
+      <div className="border-b border-gray-600 p-4 bg-gray-900">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
@@ -159,27 +152,29 @@ export default function MessageList({ selectedUser }: MessageListProps) {
               </span>
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-white">
                 {selectedUser === "notlarim" ? "Notlarım" : selectedUser}
               </h2>
-              {selectedUser !== "notlarim" && <p className="text-sm text-green-500">• Çevrimiçi</p>}
+              {selectedUser !== "notlarim" && (
+                <p className="text-sm text-green-400">• Çevrimiçi</p>
+              )}
             </div>
           </div>
 
           {/* 🔔 Arama ve Diğer Butonlar */}
           {selectedUser && selectedUser !== "notlarim" && (
             <div className="flex items-center space-x-2">
-              <button className="p-2 rounded-full hover:bg-gray-100 transition-colors" title="Ara">
-                <SearchIcon size={20} className="text-gray-600" />
+              <button className="p-2 rounded-full hover:bg-gray-700 transition-colors" title="Ara">
+                <SearchIcon size={20} className="text-white" />
               </button>
-              <button className="p-2 rounded-full hover:bg-gray-100 transition-colors" title="Sesli Arama">
-                <Phone size={20} className="text-gray-600" />
+              <button className="p-2 rounded-full hover:bg-gray-700 transition-colors" title="Sesli Arama">
+                <Phone size={20} className="text-white" />
               </button>
-              <button className="p-2 rounded-full hover:bg-gray-100 transition-colors" title="Görüntülü Arama">
-                <Video size={20} className="text-gray-600" />
+              <button className="p-2 rounded-full hover:bg-gray-700 transition-colors" title="Görüntülü Arama">
+                <Video size={20} className="text-white" />
               </button>
-              <button className="p-2 rounded-full hover:bg-gray-100 transition-colors" title="Menü">
-                <MoreVertical size={20} className="text-gray-600" />
+              <button className="p-2 rounded-full hover:bg-gray-700 transition-colors" title="Menü">
+                <MoreVertical size={20} className="text-white" />
               </button>
             </div>
           )}
@@ -187,11 +182,11 @@ export default function MessageList({ selectedUser }: MessageListProps) {
           {/* Notlarım için butonlar */}
           {selectedUser === "notlarim" && (
             <div className="flex items-center space-x-2">
-              <button className="p-2 rounded-full hover:bg-gray-100 transition-colors" title="Notları Ara">
-                <SearchIcon size={20} className="text-gray-600" />
+              <button className="p-2 rounded-full hover:bg-gray-700 transition-colors" title="Notları Ara">
+                <SearchIcon size={20} className="text-white" />
               </button>
-              <button className="p-2 rounded-full hover:bg-gray-100 transition-colors" title="Menü">
-                <MoreVertical size={20} className="text-gray-600" />
+              <button className="p-2 rounded-full hover:bg-gray-700 transition-colors" title="Menü">
+                <MoreVertical size={20} className="text-white" />
               </button>
             </div>
           )}
@@ -200,7 +195,7 @@ export default function MessageList({ selectedUser }: MessageListProps) {
 
       {/* 🗨️ Mesaj Alanı */}
       <div
-        className="flex-1 overflow-y-auto p-4 space-y-4"
+        className="flex-1 overflow-y-auto p-4 space-y-4 text-white"
         style={{
           marginTop: "73px", // Header yüksekliği kadar
           marginBottom: "80px", // Footer yüksekliği kadar
@@ -213,7 +208,7 @@ export default function MessageList({ selectedUser }: MessageListProps) {
           >
             <div
               className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                message.sender === "user" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-900"
+                message.sender === "user" ? "bg-blue-500 text-white" : "bg-gray-700 text-white"
               }`}
             >
               <p className="text-sm whitespace-pre-wrap">{message.text}</p>
@@ -235,10 +230,10 @@ export default function MessageList({ selectedUser }: MessageListProps) {
       </div>
 
       {/* 📝 Sabit Mesaj Barı */}
-      <div className="border-t border-gray-200 p-4 bg-white">
+      <div className="border-t border-gray-600 p-4 bg-gray-900">
         <form onSubmit={handleSendMessage} className="flex items-center space-x-3">
           <label
-            className="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-2 rounded-lg text-sm transition-colors"
+            className="cursor-pointer bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-lg text-sm transition-colors"
             title="Dosya Ekle"
           >
             📎
@@ -249,7 +244,7 @@ export default function MessageList({ selectedUser }: MessageListProps) {
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder={selectedUser === "notlarim" ? "Not ekleyin..." : "Mesajınızı yazın..."}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+            className="flex-1 px-4 py-2 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white bg-gray-800"
           />
           <button
             type="submit"
@@ -259,7 +254,7 @@ export default function MessageList({ selectedUser }: MessageListProps) {
           </button>
         </form>
         {selectedFile && (
-          <div className="text-sm text-gray-600 mt-2">
+          <div className="text-sm text-gray-400 mt-2">
             Eklenen dosya: <strong>{selectedFile.name}</strong>
           </div>
         )}

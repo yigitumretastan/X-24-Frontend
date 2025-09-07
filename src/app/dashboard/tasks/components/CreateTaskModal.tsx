@@ -10,7 +10,38 @@ interface Option {
 interface CreateTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
+  workspaceId: string;
+  workspaceTaskId?: string;
+  userId: string;
 }
+
+// Dark theme hook
+const useDarkMode = () => {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    // Çerezlerden tema bilgisini al
+    const getCookie = (name: string) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop()?.split(';').shift();
+    };
+
+    const theme = getCookie('theme');
+    setIsDark(theme === 'dark');
+
+    // Tema değişikliklerini dinle
+    const handleThemeChange = () => {
+      const newTheme = getCookie('theme');
+      setIsDark(newTheme === 'dark');
+    };
+
+    window.addEventListener('storage', handleThemeChange);
+    return () => window.removeEventListener('storage', handleThemeChange);
+  }, []);
+
+  return isDark;
+};
 
 // Searchable Multi-Select Component
 const SearchableMultiSelect = ({
@@ -19,12 +50,14 @@ const SearchableMultiSelect = ({
   onChange,
   placeholder,
   isMultiple = false,
+  isDark = false,
 }: {
   options: Option[];
   selectedValues: string[];
   onChange: (values: string[]) => void;
   placeholder: string;
   isMultiple?: boolean;
+  isDark?: boolean;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -64,7 +97,6 @@ const SearchableMultiSelect = ({
     onChange(selectedValues.filter((v) => v !== value));
   };
 
-  // Dışarı tıklandığında dropdown'ı kapat
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element;
@@ -82,10 +114,14 @@ const SearchableMultiSelect = ({
     };
   }, [isOpen]);
 
+  const baseClasses = "w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none cursor-pointer flex items-center justify-between";
+  const lightClasses = "border-gray-300 bg-white text-gray-900";
+  const darkClasses = "border-gray-600 bg-gray-800 text-white";
+
   return (
     <div className="relative searchable-multiselect">
       <div
-        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none cursor-pointer bg-white flex items-center justify-between"
+        className={`${baseClasses} ${isDark ? darkClasses : lightClasses}`}
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex-1 flex flex-wrap gap-1">
@@ -95,12 +131,18 @@ const SearchableMultiSelect = ({
               return (
                 <span
                   key={value}
-                  className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm flex items-center gap-1"
+                  className={`px-2 py-1 rounded text-sm flex items-center gap-1 ${
+                    isDark 
+                      ? 'bg-blue-900 text-blue-200' 
+                      : 'bg-blue-100 text-blue-800'
+                  }`}
                 >
                   {option?.label}
                   <X
                     size={12}
-                    className="cursor-pointer hover:text-blue-600"
+                    className={`cursor-pointer ${
+                      isDark ? 'hover:text-blue-100' : 'hover:text-blue-600'
+                    }`}
                     onClick={(e) => removeItem(value, e)}
                   />
                 </span>
@@ -109,7 +151,9 @@ const SearchableMultiSelect = ({
           ) : (
             <span
               className={
-                selectedValues.length === 0 ? "text-gray-500" : "text-gray-900"
+                selectedValues.length === 0 
+                  ? (isDark ? "text-gray-400" : "text-gray-500")
+                  : (isDark ? "text-white" : "text-gray-900")
               }
             >
               {getDisplayText()}
@@ -118,43 +162,55 @@ const SearchableMultiSelect = ({
         </div>
         <ChevronDown
           size={16}
-          className={`text-gray-400 transition-transform ${
+          className={`${isDark ? 'text-gray-400' : 'text-gray-400'} transition-transform ${
             isOpen ? "rotate-180" : ""
           }`}
         />
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-hidden">
-          <div className="p-2 border-b border-gray-200">
+        <div className={`absolute z-50 w-full mt-1 border rounded-lg shadow-lg max-h-60 overflow-hidden ${
+          isDark 
+            ? 'bg-gray-800 border-gray-600' 
+            : 'bg-white border-gray-300'
+        }`}>
+          <div className={`p-2 border-b ${isDark ? 'border-gray-600' : 'border-gray-200'}`}>
             <div className="relative">
               <Search
                 size={16}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
+                  isDark ? 'text-gray-400' : 'text-gray-400'
+                }`}
               />
               <input
                 type="text"
                 placeholder="Ara..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full pl-10 pr-4 py-2 border rounded outline-none focus:ring-2 focus:ring-blue-500 ${
+                  isDark 
+                    ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400'
+                    : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
+                }`}
                 onClick={(e) => e.stopPropagation()}
               />
             </div>
           </div>
           <div className="max-h-40 overflow-y-auto">
             {filteredOptions.length === 0 ? (
-              <div className="p-3 text-gray-500 text-center">
+              <div className={`p-3 text-center ${
+                isDark ? 'text-gray-400' : 'text-gray-500'
+              }`}>
                 Sonuç bulunamadı
               </div>
             ) : (
               filteredOptions.map((option) => (
                 <div
                   key={option.value}
-                  className={`p-3 cursor-pointer hover:bg-gray-50 flex items-center gap-2 ${
+                  className={`p-3 cursor-pointer flex items-center gap-2 ${
                     selectedValues.includes(option.value)
-                      ? "bg-blue-50 text-blue-700"
-                      : ""
+                      ? (isDark ? 'bg-blue-900 text-blue-200' : 'bg-blue-50 text-blue-700')
+                      : (isDark ? 'hover:bg-gray-700 text-white' : 'hover:bg-gray-50 text-gray-900')
                   }`}
                   onClick={() => handleSelect(option.value)}
                 >
@@ -180,7 +236,12 @@ const SearchableMultiSelect = ({
 export default function CreateTaskModal({
   isOpen,
   onClose,
+  workspaceId,
+  workspaceTaskId,
+  userId,
 }: CreateTaskModalProps) {
+  const isDark = useDarkMode();
+  
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -197,59 +258,55 @@ export default function CreateTaskModal({
   const [loading, setLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api";
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api";
 
-  // useCallback kullanarak fetchData fonksiyonunu optimize et
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       // Kullanıcıları çek
-      const usersResponse = await fetch(`${API_BASE_URL}/users`);
+      const usersResponse = await fetch(`${API_BASE_URL}/Workspace/${workspaceId}/users`, {
+        headers: {
+          'Content-Type': 'application/json',
+          // Gerekirse authorization header ekle
+        }
+      });
+      
       if (usersResponse.ok) {
         const usersData = await usersResponse.json();
-        setUsers(usersData);
+        setUsers(usersData.map((user: any) => ({
+          value: user.id.toString(),
+          label: user.name || `${user.firstName} ${user.lastName}`,
+        })));
       } else {
-        // Fallback mock data
-        setUsers([
-          { value: "1", label: "Ali Yılmaz" },
-          { value: "2", label: "Ayşe Kaya" },
-          { value: "3", label: "Mehmet Demir" },
-          { value: "4", label: "Fatma Öz" },
-        ]);
+        console.error('Kullanıcılar yüklenemedi:', usersResponse.status);
+        setUsers([]);
       }
 
       // Projeleri çek
-      const projectsResponse = await fetch(`${API_BASE_URL}/projects`);
+      const projectsResponse = await fetch(`${API_BASE_URL}/Workspace/${workspaceId}/projects`, {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
       if (projectsResponse.ok) {
         const projectsData = await projectsResponse.json();
-        setProjects(projectsData);
+        setProjects(projectsData.map((project: any) => ({
+          value: project.id.toString(),
+          label: project.name,
+        })));
       } else {
-        // Fallback mock data
-        setProjects([
-          { value: "1", label: "Web Geliştirme" },
-          { value: "2", label: "Mobil Uygulama" },
-          { value: "3", label: "API Entegrasyonu" },
-        ]);
+        console.error('Projeler yüklenemedi:', projectsResponse.status);
+        setProjects([]);
       }
     } catch (error) {
       console.error("Veriler çekilirken hata oluştu:", error);
-      // Fallback to mock data
-      setUsers([
-        { value: "1", label: "Ali Yılmaz" },
-        { value: "2", label: "Ayşe Kaya" },
-        { value: "3", label: "Mehmet Demir" },
-        { value: "4", label: "Fatma Öz" },
-      ]);
-      setProjects([
-        { value: "1", label: "Web Geliştirme" },
-        { value: "2", label: "Mobil Uygulama" },
-        { value: "3", label: "API Entegrasyonu" },
-      ]);
+      setUsers([]);
+      setProjects([]);
     } finally {
       setLoading(false);
     }
-  }, [API_BASE_URL]);
+  }, [API_BASE_URL, workspaceId]);
 
   useEffect(() => {
     if (isOpen) {
@@ -309,42 +366,55 @@ export default function CreateTaskModal({
     try {
       const formDataToSend = new FormData();
 
-      formDataToSend.append("title", formData.title);
-      formDataToSend.append("description", formData.description);
-      formDataToSend.append("startDate", formData.startDate);
-      formDataToSend.append("dueDate", formData.dueDate);
-      formDataToSend.append("assignees", JSON.stringify(formData.assignees));
-      formDataToSend.append(
-        "supervisors",
-        JSON.stringify(formData.supervisors)
-      );
-      formDataToSend.append("projects", JSON.stringify(formData.projects));
+      // API endpoint'e göre veri yapısını hazırla
+      const taskData = {
+        title: formData.title,
+        description: formData.description,
+        startDate: formData.startDate,
+        dueDate: formData.dueDate,
+        assigneeIds: formData.assignees.map(id => parseInt(id)),
+        supervisorIds: formData.supervisors.map(id => parseInt(id)),
+        projectIds: formData.projects.map(id => parseInt(id)),
+        createdByUserId: parseInt(userId),
+        workspaceId: parseInt(workspaceId),
+        workspaceTaskId: workspaceTaskId ? parseInt(workspaceTaskId) : null,
+      };
 
+      // JSON olarak gönder
+      formDataToSend.append('taskData', JSON.stringify(taskData));
+
+      // Dosyaları ekle
       formData.files.forEach((file, index) => {
-        formDataToSend.append(`files[${index}]`, file);
+        formDataToSend.append(`files`, file);
       });
 
-      const response = await fetch(`${API_BASE_URL}/tasks`, {
-        method: "POST",
-        body: formDataToSend,
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/Workspace/${workspaceId}/WorkspaceTask${
+          workspaceTaskId ? `/${workspaceTaskId}` : ''
+        }/Workspaceuser/${userId}`, 
+        {
+          method: "POST",
+          body: formDataToSend,
+          headers: {
+            // Content-Type header'ını FormData için otomatik ayarlanmasına izin ver
+          }
+        }
+      );
 
       if (response.ok) {
-        console.log("Görev başarıyla oluşturuldu");
+        const result = await response.json();
+        console.log("Görev başarıyla oluşturuldu", result);
         clearForm();
         onClose();
-        // Başarı mesajı göster
         alert("Görev başarıyla oluşturuldu!");
       } else {
         const errorData = await response.json();
         console.error("Görev oluşturulurken hata oluştu:", errorData);
-        alert("Görev oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.");
+        alert(errorData.message || "Görev oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.");
       }
     } catch (error) {
       console.error("API isteği sırasında hata oluştu:", error);
-      alert(
-        "Bağlantı hatası. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin."
-      );
+      alert("Bağlantı hatası. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.");
     } finally {
       setSubmitLoading(false);
     }
@@ -353,13 +423,10 @@ export default function CreateTaskModal({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
 
-    // Dosya boyutu kontrolü (10MB limit)
     const maxSize = 10 * 1024 * 1024; // 10MB
     const validFiles = selectedFiles.filter((file) => {
       if (file.size > maxSize) {
-        alert(
-          `${file.name} dosyası çok büyük. Maksimum dosya boyutu 10MB'dır.`
-        );
+        alert(`${file.name} dosyası çok büyük. Maksimum dosya boyutu 10MB'dır.`);
         return false;
       }
       return true;
@@ -402,8 +469,19 @@ export default function CreateTaskModal({
     };
   }, [isOpen, handleCancel]);
 
+  if (!isOpen) return null;
+
+  const modalBg = isDark ? 'bg-gray-900' : 'bg-white';
+  const textPrimary = isDark ? 'text-white' : 'text-gray-800';
+  const textSecondary = isDark ? 'text-gray-300' : 'text-gray-700';
+  const textMuted = isDark ? 'text-gray-400' : 'text-gray-500';
+  const borderColor = isDark ? 'border-gray-600' : 'border-gray-200';
+  const inputBg = isDark ? 'bg-gray-800' : 'bg-white';
+  const inputBorder = isDark ? 'border-gray-600' : 'border-gray-300';
+  const headerBg = isDark ? 'bg-gray-800' : 'bg-gray-50';
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center text-black">
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div
         className="fixed inset-0 bg-black/40"
         onClick={handleCancel}
@@ -414,16 +492,20 @@ export default function CreateTaskModal({
         }}
       />
       <div
-        className="relative bg-white rounded-lg shadow-xl w-full max-w-4xl mx-4 p-0 overflow-hidden"
+        className={`relative ${modalBg} rounded-lg shadow-xl w-full max-w-4xl mx-4 p-0 overflow-hidden`}
         style={{ zIndex: 10000 }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50">
-          <h2 className="text-xl font-semibold text-gray-800">Görev Oluştur</h2>
+        <div className={`flex items-center justify-between p-6 ${borderColor} border-b ${headerBg}`}>
+          <h2 className={`text-xl font-semibold ${textPrimary}`}>Görev Oluştur</h2>
           <div className="flex gap-2">
             <button
               onClick={handleCancel}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
+              className={`px-4 py-2 rounded hover:opacity-80 transition-colors ${
+                isDark 
+                  ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
               disabled={submitLoading}
             >
               İptal
@@ -440,10 +522,10 @@ export default function CreateTaskModal({
 
         {/* Loading State */}
         {loading && (
-          <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-50">
+          <div className={`absolute inset-0 ${isDark ? 'bg-gray-900/80' : 'bg-white/80'} flex items-center justify-center z-50`}>
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-2 text-gray-600">Veriler yükleniyor...</p>
+              <p className={`mt-2 ${textMuted}`}>Veriler yükleniyor...</p>
             </div>
           </div>
         )}
@@ -452,7 +534,9 @@ export default function CreateTaskModal({
         <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
           {/* Görev Başlığı */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 bg-gray-100 px-3 py-2 rounded">
+            <label className={`block text-sm font-medium px-3 py-2 rounded ${
+              isDark ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-700'
+            }`}>
               Görev Başlığı *
             </label>
             <input
@@ -461,7 +545,11 @@ export default function CreateTaskModal({
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, title: e.target.value }))
               }
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none ${
+                isDark 
+                  ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400'
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+              }`}
               placeholder="Görev başlığını giriniz"
               maxLength={200}
             />
@@ -469,7 +557,9 @@ export default function CreateTaskModal({
 
           {/* Görev Açıklaması */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 bg-gray-100 px-3 py-2 rounded">
+            <label className={`block text-sm font-medium px-3 py-2 rounded ${
+              isDark ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-700'
+            }`}>
               Görev Açıklaması *
             </label>
             <textarea
@@ -481,7 +571,11 @@ export default function CreateTaskModal({
                 }))
               }
               rows={4}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
+              className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none ${
+                isDark 
+                  ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400'
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+              }`}
               placeholder="Görev açıklamasını giriniz"
               maxLength={1000}
             />
@@ -489,12 +583,14 @@ export default function CreateTaskModal({
 
           {/* Tarihler */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 bg-gray-100 px-3 py-2 rounded">
+            <label className={`block text-sm font-medium px-3 py-2 rounded ${
+              isDark ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-700'
+            }`}>
               Tarihler
             </label>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs text-gray-500 mb-1">
+                <label className={`block text-xs mb-1 ${textMuted}`}>
                   Başlangıç Tarihi
                 </label>
                 <input
@@ -506,11 +602,15 @@ export default function CreateTaskModal({
                       startDate: e.target.value,
                     }))
                   }
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none ${
+                    isDark 
+                      ? 'bg-gray-800 border-gray-600 text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">
+                <label className={`block text-xs mb-1 ${textMuted}`}>
                   Bitiş Tarihi
                 </label>
                 <input
@@ -522,7 +622,11 @@ export default function CreateTaskModal({
                       dueDate: e.target.value,
                     }))
                   }
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none ${
+                    isDark 
+                      ? 'bg-gray-800 border-gray-600 text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
                 />
               </div>
             </div>
@@ -530,7 +634,9 @@ export default function CreateTaskModal({
 
           {/* Atanan Kişiler */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 bg-gray-100 px-3 py-2 rounded">
+            <label className={`block text-sm font-medium px-3 py-2 rounded ${
+              isDark ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-700'
+            }`}>
               Atanan Kişiler *
             </label>
             <SearchableMultiSelect
@@ -541,17 +647,20 @@ export default function CreateTaskModal({
               }
               placeholder="Atanacak kişileri seçiniz"
               isMultiple={true}
+              isDark={isDark}
             />
           </div>
 
           {/* Gözetmenler ve Projeler */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 bg-gray-100 px-3 py-2 rounded">
+            <label className={`block text-sm font-medium px-3 py-2 rounded ${
+              isDark ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-700'
+            }`}>
               Gözetmen ve Proje
             </label>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs text-gray-500 mb-1">
+                <label className={`block text-xs mb-1 ${textMuted}`}>
                   Gözetmenler
                 </label>
                 <SearchableMultiSelect
@@ -562,10 +671,11 @@ export default function CreateTaskModal({
                   }
                   placeholder="Gözetmenleri seçiniz"
                   isMultiple={true}
+                  isDark={isDark}
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">
+                <label className={`block text-xs mb-1 ${textMuted}`}>
                   Projeler
                 </label>
                 <SearchableMultiSelect
@@ -576,6 +686,7 @@ export default function CreateTaskModal({
                   }
                   placeholder="Projeleri seçiniz"
                   isMultiple={true}
+                  isDark={isDark}
                 />
               </div>
             </div>
@@ -583,10 +694,16 @@ export default function CreateTaskModal({
 
           {/* Dosya Yükleme */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 bg-gray-100 px-3 py-2 rounded">
+            <label className={`block text-sm font-medium px-3 py-2 rounded ${
+              isDark ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-700'
+            }`}>
               Dosya Ekle
             </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+            <div className={`border-2 border-dashed rounded-lg p-6 text-center hover:border-opacity-80 transition-colors ${
+              isDark 
+                ? 'border-gray-600 hover:border-gray-500' 
+                : 'border-gray-300 hover:border-gray-400'
+            }`}>
               <input
                 type="file"
                 multiple
@@ -597,16 +714,18 @@ export default function CreateTaskModal({
               />
               <label
                 htmlFor="file-upload"
-                className="cursor-pointer text-gray-600 hover:text-gray-800"
+                className={`cursor-pointer hover:opacity-80 ${textMuted}`}
               >
                 <div className="space-y-2">
-                  <div className="w-8 h-8 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
-                    <span className="text-gray-400 text-lg">+</span>
+                  <div className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center ${
+                    isDark ? 'bg-gray-800' : 'bg-gray-100'
+                  }`}>
+                    <span className={`text-lg ${textMuted}`}>+</span>
                   </div>
-                  <p className="text-sm text-gray-600">
+                  <p className={`text-sm ${textMuted}`}>
                     Dosya yüklemek için tıklayın
                   </p>
-                  <p className="text-xs text-gray-400">
+                  <p className={`text-xs ${textMuted}`}>
                     Maksimum dosya boyutu: 10MB
                   </p>
                 </div>
@@ -616,24 +735,30 @@ export default function CreateTaskModal({
             {/* Yüklenen Dosyalar */}
             {formData.files.length > 0 && (
               <div className="space-y-2 mt-4">
-                <h4 className="text-sm font-medium text-gray-700">
+                <h4 className={`text-sm font-medium ${textSecondary}`}>
                   Yüklenen Dosyalar ({formData.files.length}):
                 </h4>
                 <div className="space-y-2">
                   {formData.files.map((file, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      className={`flex items-center justify-between p-3 rounded-lg ${
+                        isDark ? 'bg-gray-800' : 'bg-gray-50'
+                      }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-blue-600 text-sm">📄</span>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          isDark ? 'bg-blue-900' : 'bg-blue-100'
+                        }`}>
+                          <span className={`text-sm ${
+                            isDark ? 'text-blue-200' : 'text-blue-600'
+                          }`}>📄</span>
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-700">
+                          <p className={`text-sm font-medium ${textSecondary}`}>
                             {file.name}
                           </p>
-                          <p className="text-xs text-gray-500">
+                          <p className={`text-xs ${textMuted}`}>
                             {formatFileSize(file.size)}
                           </p>
                         </div>

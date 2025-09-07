@@ -11,3 +11,8 @@ export function setCookie(name: string, value: string, days = 1): void {
   const expires = new Date(Date.now() + days * 864e5).toUTCString();
   document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Strict; Secure`;
 }
+
+export function deleteCookie(name: string): void {
+  if (typeof document === "undefined") return;
+  document.cookie = `${name}=; Max-Age=0; path=/; SameSite=Strict; Secure`;
+}

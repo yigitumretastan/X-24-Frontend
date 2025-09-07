@@ -1,15 +1,29 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Filter } from "lucide-react";
 import { useTasks } from "./hooks/useTasks";
 import TaskCard from "./components/TaskCard";
 import Header from "./components/Header";
 import FilterTabs from "./components/FilterTabs";
 
+function getThemeFromCookies(): "light" | "dark" {
+  if (typeof document === "undefined") return "light";
+  const themeCookie = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("theme="))
+    ?.split("=")[1];
+  return themeCookie === "dark" ? "dark" : "light";
+}
+
 export default function TasksPage() {
   const { tasks, error, createTask } = useTasks();
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    setTheme(getThemeFromCookies());
+  }, []);
 
   const taskCounts = {
     all: tasks.length,
@@ -33,8 +47,11 @@ export default function TasksPage() {
     return matchFilter && matchSearch;
   });
 
+  const workspaceId = "example-workspace-id";
+  const userId = "example-user-id";
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className={`min-h-screen py-8 ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
       <Header
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
@@ -46,6 +63,8 @@ export default function TasksPage() {
             priority: "medium",
           })
         }
+        workspaceId={workspaceId}
+        userId={userId}
       />
 
       <div className="max-w-7xl mx-auto px-6 py-8">
@@ -59,19 +78,22 @@ export default function TasksPage() {
           activeFilter={activeFilter}
           onFilterChange={setActiveFilter}
           filters={filters}
+          theme={theme}  // Pass theme to FilterTabs for styling
         />
 
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
           {filteredTasks.length > 0 ? (
-            filteredTasks.map((task) => <TaskCard key={task.id} task={task} />)
+            filteredTasks.map((task) => (
+              <div key={task.id} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <TaskCard task={task} theme={theme} />
+              </div>
+            ))
           ) : (
-            <div className="text-center py-12">
-              <div className="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+            <div className="col-span-full text-center py-12">
+              <div className={`bg-gray-200 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 ${theme === "dark" ? "bg-gray-700" : "bg-gray-200"}`}>
                 <Filter className="w-8 h-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                {searchTerm ? "Arama sonucu yok" : "Henüz görev yok"}
-              </h3>
+              <h3 className="text-lg font-medium mb-2">{searchTerm ? "Arama sonucu yok" : "Henüz görev yok"}</h3>
               <p className="text-gray-500 mb-4">
                 {searchTerm
                   ? "Farklı bir anahtar kelime deneyin."
