@@ -30,10 +30,10 @@ export default function LoginPage() {
 	const [error, setError] = useState("");
 	const [twoFactorRequired, setTwoFactorRequired] = useState(false);
 
-	const [identifier, setIdentifier] = useState(""); // email veya telefon
+	const [identifier, setIdentifier] = useState("");
 	const [password, setPassword] = useState("");
-	const [showPassword, setShowPassword] = useState(false); // 👁️ şifre görünürlüğü
-	const [rememberMe, setRememberMe] = useState(false); // ✅ beni hatırla
+	const [showPassword, setShowPassword] = useState(false);
+	const [rememberMe, setRememberMe] = useState(false);
 
 	const [twoFactorCode, setTwoFactorCode] = useState<string[]>(["", "", "", "", "", ""]);
 	const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
@@ -89,7 +89,7 @@ export default function LoginPage() {
 				if (data.twoFactorRequired) {
 					setTwoFactorRequired(true);
 				} else if (data.token) {
-					setCookie("userToken", data.token, rememberMe ? 7 : undefined); // ✅ remember me logic
+					setCookie("userToken", data.token, rememberMe ? 7 : undefined);
 					router.push("/dashboard");
 				} else {
 					setError(data.message || "Giriş başarısız.");
@@ -97,7 +97,7 @@ export default function LoginPage() {
 			} else {
 				setError(data.message || "Giriş başarısız.");
 			}
-		} catch (error) {
+		} catch{
 			setError("Sunucu hatası.");
 		} finally {
 			setLoading(false);
@@ -130,17 +130,18 @@ export default function LoginPage() {
 			const data: LoginResponse = await response.json();
 
 			if (response.ok && data.token) {
-				setCookie("userToken", data.token, rememberMe ? 7 : undefined); // ✅ remember me logic
+				setCookie("userToken", data.token, rememberMe ? 7 : undefined);
 				router.push("/dashboard");
 			} else {
 				setError(data.message || "Doğrulama başarısız.");
 			}
-		} catch (err) {
+		} catch{
 			setError("Sunucu hatası.");
 		} finally {
 			setLoading(false);
 		}
 	}
+
 
 	function handleGoogleSignIn(): void {
 		alert("Google sign-in clicked (implement OAuth flow)");
@@ -204,7 +205,6 @@ export default function LoginPage() {
 									stroke="currentColor"
 								>
 									{showPassword ? (
-										// Göz açık (şifre görünüyor)
 										<path
 											strokeLinecap="round"
 											strokeLinejoin="round"
@@ -212,7 +212,6 @@ export default function LoginPage() {
 											d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
 										/>
 									) : (
-										// Göz kapalı (şifre gizli)
 										<path
 											strokeLinecap="round"
 											strokeLinejoin="round"

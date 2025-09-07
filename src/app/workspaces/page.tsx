@@ -48,13 +48,13 @@ export default function WorkspacePage() {
 				});
 				const dataJoined = await resJoined.json();
 				setJoinedWorkspaces(dataJoined?.data || []);
-			} catch (err) {
-				console.error("Workspaces fetch error:", err);
+			} catch (error) {
+				console.error("Workspaces fetch error:", error);
 			}
 		};
 
 		fetchWorkspaces();
-	}, [token]);
+	}, [token, router]);
 
 	const handleCreateWorkspace = async () => {
 		if (!newWorkspaceName.trim()) {
@@ -91,7 +91,7 @@ export default function WorkspacePage() {
 			} else {
 				setCreateError(data.message || "Oluşturma başarısız.");
 			}
-		} catch (err) {
+		} catch{
 			setCreateError("Sunucu hatası.");
 		} finally {
 			setCreating(false);
@@ -126,10 +126,11 @@ export default function WorkspacePage() {
 			setMyWorkspaces((prev) => prev.filter((w) => w.id !== id));
 			setJoinedWorkspaces((prev) => prev.filter((w) => w.id !== id));
 			alert(resBody.message || "Workspace silindi.");
-		} catch (err) {
+		} catch {
 			alert("Beklenmeyen bir hata oluştu.");
 		}
 	};
+
 
 	const handleSelect = (ws: Workspace) => {
 		localStorage.setItem("selectedWorkspace", JSON.stringify(ws));

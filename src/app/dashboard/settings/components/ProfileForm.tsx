@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -48,8 +46,7 @@ export default function ProfileForm() {
       try {
         const parsed = JSON.parse(workspaceRaw);
         workspaceIdTemp = parsed.id;
-      } catch (e) {
-        // Hata yönetimi istersen ekleyebilirsin
+      } catch{
       }
     }
 
@@ -58,7 +55,6 @@ export default function ProfileForm() {
         const payload = JSON.parse(atob(rawToken.split(".")[1]));
         userIdTemp = payload?.sub || null;
       } catch {
-        // Hata yönetimi istersen ekleyebilirsin
       }
     } else {
       const userLocal = localStorage.getItem("userId");
@@ -124,7 +120,7 @@ export default function ProfileForm() {
 
   // Profil güncelleme
   const handleUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // Form submit'i engellemek için e parametresini kullanıyoruz.
     setLoading(true);
 
     if (!workspaceId || !userId || !token || token.trim() === "") {

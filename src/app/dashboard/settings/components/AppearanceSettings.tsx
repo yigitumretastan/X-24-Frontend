@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -63,7 +61,7 @@ export default function AppearanceSettings() {
 	}, []);
 
 	// Kullanıcının görünüm ayarlarını çek
-	const fetchAppearanceSettings = async () => {
+	const fetchAppearanceSettings = useCallback(async () => {
 		if (!workspaceId || !userId || !token) return;
 
 		try {
@@ -91,15 +89,14 @@ export default function AppearanceSettings() {
 		} catch (error) {
 			console.log("Veri çekme hatası:", error);
 		}
-	};
+	}, [workspaceId, userId, token]);
 
 	// İlk yüklemede ayarları getir
 	useEffect(() => {
 		if (!workspaceId || !userId || !token) return;
 		fetchAppearanceSettings();
-	}, [workspaceId, userId, token]);
+	}, [workspaceId, userId, token, fetchAppearanceSettings]);
 
-	// Ayarları güncelle
 	const handleUpdate = async () => {
 		if (!workspaceId || !userId || !token) {
 			console.log("Workspace, kullanıcı bilgisi veya token eksik.");
@@ -154,7 +151,6 @@ export default function AppearanceSettings() {
 			setLoading(false);
 		}
 	};
-
 
 	return (
 		<div className="space-y-4">
