@@ -164,27 +164,7 @@ export default function AppearanceSettings() {
 					<option value="light">Açık</option>
 					<option value="dark">Koyu</option>
 				</select>
-			</div>
-
-			<div>
-				<label className="block text-sm font-medium">Arka Plan Rengi</label>
-				<input
-					type="color"
-					value={background}
-					onChange={(e) => setBackground(e.target.value)}
-					className="w-full h-10 p-0 border-none"
-				/>
-			</div>
-
-			<div
-				className="mt-4 p-4 rounded border"
-				style={{ backgroundColor: background }}
-			>
-				<p className="text-sm">
-					Önizleme alanı ({theme === "dark" ? "Koyu" : "Açık"} tema)
-				</p>
-			</div>
-
+			</div>	
 			<button
 				onClick={handleUpdate}
 				disabled={loading}

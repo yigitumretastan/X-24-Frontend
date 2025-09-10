@@ -47,7 +47,7 @@ export default function ProfileModal({ onClose, triggerRef }: ProfileModalProps)
   }, [onClose, triggerRef]);
 
   const handleProfileClick = () => {
-    router.push("/dashboard/profile");
+    router.push("/dashboard/settings");
     onClose();
   };
 
