@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import TimeTracker from "./components/TimeTracker";
 
 interface Workspace {
   id: string;
@@ -9,7 +10,6 @@ interface Workspace {
   platform?: string;
 }
 
-// Çerezden tema bilgisi çekme fonksiyonu
 function getThemeFromCookies(): "light" | "dark" {
   if (typeof document === "undefined") return "light";
   const themeCookie = document.cookie
@@ -25,11 +25,9 @@ export default function DashboardPage() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    // Tema ayarını çerezden al
     const savedTheme = getThemeFromCookies();
     setTheme(savedTheme);
 
-    // Workspace'i al
     const stored = localStorage.getItem("selectedWorkspace");
     if (!stored) {
       router.push("/workspaces");
@@ -72,7 +70,7 @@ export default function DashboardPage() {
           {workspace.platform && <> ({workspace.platform})</>}
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
           <div
             className={`p-6 rounded shadow hover:shadow-md transition cursor-pointer ${
               theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"
@@ -94,6 +92,9 @@ export default function DashboardPage() {
             </p>
           </div>
         </div>
+
+        {/* 🔗 TimeTracker Bileşeni */}
+        <TimeTracker/>
       </div>
     </main>
   );
