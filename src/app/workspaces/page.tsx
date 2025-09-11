@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getCookie } from "@/app/utils/cookies"; // deleteCookie aşağıda tanımlanıyor
+import { getCookie } from "@/app/utils/cookies"; 
 import { TrashIcon } from "@heroicons/react/24/outline";
 
 interface Workspace {
@@ -10,7 +10,6 @@ interface Workspace {
 	name: string;
 }
 
-// deleteCookie helper (çünkü utils içinde tanımlı değil)
 function deleteCookie(name: string) {
 	if (typeof document === "undefined") return;
 	document.cookie = `${name}=; Max-Age=0; path=/;`;

@@ -81,6 +81,7 @@ export default function LoginPage() {
 					Accept: "application/json",
 				},
 				body: JSON.stringify(loginBody),
+				credentials: "include",
 			});
 
 			const data: LoginResponse = await response.json();
@@ -97,7 +98,7 @@ export default function LoginPage() {
 			} else {
 				setError(data.message || "Giriş başarısız.");
 			}
-		} catch{
+		} catch {
 			setError("Sunucu hatası.");
 		} finally {
 			setLoading(false);
@@ -135,7 +136,7 @@ export default function LoginPage() {
 			} else {
 				setError(data.message || "Doğrulama başarısız.");
 			}
-		} catch{
+		} catch {
 			setError("Sunucu hatası.");
 		} finally {
 			setLoading(false);

@@ -1,5 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { Task, TaskForm, TaskType } from "../hooks/useCalendar";
+
+interface Task {
+  id: number;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  typeId: number;
+  color?: string;
+  typeName?: string;
+  completed?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface TaskType {
+  id: number;
+  name: string;
+  color?: string;
+}
+
+interface TaskForm {
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  typeId: number;
+}
 
 interface TaskModalProps {
   show: boolean;
