@@ -9,7 +9,7 @@ import { LoginRequest, LoginResponse } from "@/app/types/auth";
 import { Eye, EyeOff, Mail, Lock, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/app/hooks/useTheme";
 
-interface LoginFormData {
+interface LoginFormData extends Record<string, unknown> {
 	identifier: string;
 	password: string;
 }
