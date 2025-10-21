@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getCookie } from "@/app/utils/cookies";
 import { ChevronRight, MessageSquare, Video, BarChart3, Clock, Calendar, CheckCircle } from "lucide-react";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 interface FeatureCardProps {
   icon: React.ReactNode;
@@ -58,6 +58,7 @@ const BenefitItem: React.FC<BenefitItemProps> = ({
 
 const X24LandingPage: React.FC = () => {
   const [scrollY, setScrollY] = useState(0);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -573,15 +574,14 @@ const X24LandingPage: React.FC = () => {
               <button
                 className="cta-btn"
                 onClick={() => {
-                  const token = getCookie("auth_token");
-                  if (token) {
-                    window.location.href = "/dashboard";
+                  if (isAuthenticated) {
+                    window.location.href = "/workspaces";
                   } else {
                     window.location.href = "/auth/register";
                   }
                 }}
               >
-                Ücretsiz Başla
+                {isAuthenticated ? "Workspace'e Git" : "Ücretsiz Başla"}
               </button>
             </li>
           </ul>
@@ -597,8 +597,17 @@ const X24LandingPage: React.FC = () => {
             edin ve projelerinizi başarıyla tamamlayın. Tüm ihtiyaçlarınız tek
             platformda!
           </p>
-          <button className="cta-btn">
-            Ücretsiz Başlayın
+          <button 
+            className="cta-btn"
+            onClick={() => {
+              if (isAuthenticated) {
+                window.location.href = "/workspaces";
+              } else {
+                window.location.href = "/auth/register";
+              }
+            }}
+          >
+            {isAuthenticated ? "Workspace'e Git" : "Ücretsiz Başlayın"}
             <ChevronRight className="inline ml-2" size={20} />
           </button>
 
@@ -773,7 +782,18 @@ const X24LandingPage: React.FC = () => {
                 <li>24/7 destek</li>
               </ul>
 
-              <button className="cta-btn">Hemen Başlayın</button>
+              <button 
+                className="cta-btn"
+                onClick={() => {
+                  if (isAuthenticated) {
+                    window.location.href = "/workspaces";
+                  } else {
+                    window.location.href = "/auth/register";
+                  }
+                }}
+              >
+                {isAuthenticated ? "Workspace'e Git" : "Hemen Başlayın"}
+              </button>
             </div>
           </div>
         </section>

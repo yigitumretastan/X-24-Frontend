@@ -1,281 +1,361 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getCookie, setCookie } from "@/app/utils/cookies";
-import axios from 'axios';
-
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://localhost:7171';
-
-const api = axios.create({
-  baseURL: baseUrl,
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-interface RegisterData {
-  name: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  password: string;
-  confirmPassword: string;
-}
-
-interface FormErrors {
-  name: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  password: string;
-  confirmPassword: string;
-}
-
-interface RegisterResponse {
-  token?: string;
-  name?: string;
-  lastName?: string;
-  email?: string;
-  phone?: string | null;
-  message?: string;
-}
+import { useAuth } from "@/app/contexts/AuthContext";
+import { useFormValidation, authValidationRules } from "@/app/hooks/useFormValidation";
+import { apiClient } from "@/app/lib/api";
+import { RegisterRequest, RegisterResponse } from "@/app/types/auth";
+import { Eye, EyeOff, Mail, Lock, User as UserIcon, Phone } from "lucide-react";
 
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const { login, isAuthenticated } = useAuth();
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const [registerData, setRegisterData] = useState<RegisterData>({
-    name: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
-  });
-
-  const [formErrors, setFormErrors] = useState<FormErrors>({
-    name: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
-  });
-
-  const redirectToDashboard = useCallback(() => {
-    router.push("/dashboard");
-  }, [router]);
-
-  useEffect(() => {
-    const token = getCookie("userToken");
-    if (token) {
-      redirectToDashboard();
-    }
-  }, [redirectToDashboard]);
-
-  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    setRegisterData((prev) => ({ ...prev, [name]: value }));
-    setFormErrors((prev) => ({ ...prev, [name]: "" }));
-  }
-
-  async function handleRegisterSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-
-    const errors: FormErrors = {
+  // Form validation hook
+  const {
+    values,
+    errors,
+    isSubmitting,
+    handleChange,
+    handleSubmit,
+    setFieldError,
+  } = useFormValidation<RegisterRequest>(
+    {
       name: "",
       lastName: "",
       email: "",
       phone: "",
       password: "",
       confirmPassword: "",
-    };
+    },
+    authValidationRules.registerRules
+  );
 
-    let hasError = false;
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/workspaces");
+    }
+  }, [isAuthenticated, router]);
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^[0-9]{10,15}$/;
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
+  // Handle input change with validation
+  const handleInputChange = (name: keyof RegisterRequest, value: string) => {
+    handleChange(name, value);
+    if (error) setError("");
+  };
 
-    if (!registerData.name.trim()) {
-      errors.name = "Ad zorunludur.";
-      hasError = true;
-    }
-    if (!registerData.lastName.trim()) {
-      errors.lastName = "Soyad zorunludur.";
-      hasError = true;
-    }
-    if (!emailRegex.test(registerData.email)) {
-      errors.email = "Geçerli bir e-posta girin.";
-      hasError = true;
-    }
-    if (!phoneRegex.test(registerData.phone)) {
-      errors.phone = "Geçerli bir telefon numarası girin.";
-      hasError = true;
-    }
-    if (!passwordRegex.test(registerData.password)) {
-      errors.password = "Şifre en az 6 karakter olmalı, bir büyük harf ve bir rakam içermeli.";
-      hasError = true;
-    }
-    if (!registerData.confirmPassword) {
-      errors.confirmPassword = "Şifre tekrar zorunludur.";
-      hasError = true;
-    } else if (registerData.password !== registerData.confirmPassword) {
-      errors.confirmPassword = "Şifreler uyuşmuyor.";
-      hasError = true;
-    }
+  // Handle form submission
+  const onRegisterSubmit = async (formValues: RegisterRequest) => {
+    setError("");
 
-    if (hasError) {
-      setFormErrors(errors);
-      setLoading(false);
+    // Check password confirmation
+    if (formValues.password !== formValues.confirmPassword) {
+      setFieldError('confirmPassword', 'Şifreler eşleşmiyor.');
       return;
     }
 
-    const requestData = {
-      name: registerData.name,
-      lastName: registerData.lastName,
-      email: registerData.email,
-      phone: registerData.phone,
-      password: registerData.password,
-      confirmPassword: registerData.confirmPassword,
-    };
-
     try {
-      const response = await api.post<RegisterResponse>("/api/auth/register", requestData);
+      const response = await apiClient.post<RegisterResponse>("/api/auth/register", formValues);
+      const data = response.data;
 
-      if (response.data && response.data.token) {
-        setCookie("userToken", response.data.token, 7);
-        setCookie("userData", JSON.stringify({
-          name: response.data.name,
-          lastName: response.data.lastName,
-          email: response.data.email,
-          phone: response.data.phone,
-        }), 7);
-        redirectToDashboard();
+      if (data.token) {
+        // Backend'den gelen data'yı user objesine dönüştür
+        const user = {
+          id: data.id || '',
+          name: data.name,
+          lastName: data.lastName,
+          email: data.email,
+          phone: data.phone || ""
+        };
+        login(user, data.token, true); // Remember user for 7 days
+        router.push("/workspaces");
       } else {
-        setFormErrors(prev => ({
-          ...prev,
-          email: response.data?.message || "Kayıt başarısız.",
-        }));
+        setError("Kayıt başarısız.");
       }
-
     } catch (error: unknown) {
-      let errorMessage = "Bilinmeyen bir hata oluştu.";
-
-      if (axios.isAxiosError(error)) {
-        if (error.code === 'ERR_NETWORK') {
-          errorMessage = `Ağ hatası: Sunucuya ulaşılamıyor.`;
-        } else if (error.response?.data?.message) {
-          errorMessage = error.response.data.message;
-        } else {
-          errorMessage = `Sunucu hatası: ${error.response?.status || 'Bilinmiyor'}`;
-        }
-      } else if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-
-      setFormErrors(prev => ({ ...prev, email: errorMessage }));
+      // Backend'den gelen error formatını kontrol et
+      const errorMessage = error instanceof Error && 'response' in error && error.response && typeof error.response === 'object' && 'data' in error.response && error.response.data && typeof error.response.data === 'object' && ('error' in error.response.data || 'message' in error.response.data) ? (error.response.data as {error?: string; message?: string}).error || (error.response.data as {error?: string; message?: string}).message || "Sunucu hatası. Lütfen tekrar deneyin." : "Sunucu hatası. Lütfen tekrar deneyin.";
+      setError(errorMessage);
     }
-    finally {
-      setLoading(false);
-    }
-  }
+  };
 
-  function handleGoogleRegister() {
-    window.location.href = `${baseUrl}/api/Auth/signin-google`;
-  }
+  const handleGoogleRegister = async (): Promise<void> => {
+    try {
+      setError("");
+      // Backend'den Google OAuth URL'ini al
+      const response = await apiClient.get<{ url: string }>("/api/auth/google-signin-url");
+      const { url } = response.data;
+      
+      // Google OAuth sayfasına yönlendir
+      window.location.href = url;
+    } catch (error: unknown) {
+      console.error("Google OAuth hatası:", error);
+      setError("Google ile kayıt şu anda kullanılamıyor. Lütfen normal kayıt yapın.");
+    }
+  };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-100 p-8">
-      <div className="w-full max-w-md bg-white shadow-md rounded-2xl p-8 text-center">
-        <h1 className="text-3xl font-extrabold text-gray-900 mb-4">Kayıt Ol</h1>
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4">
+      {/* Ana Container */}
+      <div className="w-full max-w-md">
+        {/* Logo ve Başlık */}
+        <div className="text-center mb-8">
+          <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+            <span className="text-2xl font-bold text-white">Z</span>
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Zeniva&apos;ya Katılın</h1>
+          <p className="text-gray-600">Yeni hesap oluşturun</p>
+        </div>
 
-        <form onSubmit={handleRegisterSubmit} className="flex flex-col gap-4 text-left">
-          {formErrors.name && <p className="text-sm text-red-600">{formErrors.name}</p>}
-          <input
-            type="text"
-            name="name"
-            placeholder="Ad"
-            value={registerData.name}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
-          />
+        {/* Ana Form Container */}
+        <div className="bg-white/80 backdrop-blur-sm shadow-xl rounded-3xl p-8 border border-white/20">
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl flex items-center gap-3">
+              <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-xs">!</span>
+              </div>
+              <span className="text-sm">{error}</span>
+            </div>
+          )}
 
-          {formErrors.lastName && <p className="text-sm text-red-600">{formErrors.lastName}</p>}
-          <input
-            type="text"
-            name="lastName"
-            placeholder="Soyad"
-            value={registerData.lastName}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
-          />
+        <form onSubmit={handleSubmit(onRegisterSubmit)} className="space-y-6">
+          {/* Name & Last Name Row */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* First Name */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                <UserIcon className="w-4 h-4" />
+                Ad
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Adınız"
+                  value={values.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  disabled={isSubmitting}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
+                />
+                {errors.name && (
+                  <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                    <span className="w-4 h-4 text-red-500">⚠</span>
+                    {errors.name}
+                  </p>
+                )}
+              </div>
+            </div>
 
-          {formErrors.email && <p className="text-sm text-red-600">{formErrors.email}</p>}
-          <input
-            type="email"
-            name="email"
-            placeholder="E-Mail"
-            value={registerData.email}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
-          />
+            {/* Last Name */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                <UserIcon className="w-4 h-4" />
+                Soyad
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Soyadınız"
+                  value={values.lastName}
+                  onChange={(e) => handleInputChange('lastName', e.target.value)}
+                  disabled={isSubmitting}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
+                />
+                {errors.lastName && (
+                  <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                    <span className="w-4 h-4 text-red-500">⚠</span>
+                    {errors.lastName}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
 
-          {formErrors.phone && <p className="text-sm text-red-600">{formErrors.phone}</p>}
-          <input
-            type="tel"
-            name="phone"
-            placeholder="Telefon"
-            value={registerData.phone}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
-          />
+          {/* Email Input */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <Mail className="w-4 h-4" />
+              E-posta
+            </label>
+            <div className="relative">
+              <input
+                type="email"
+                name="email"
+                placeholder="ornek@email.com"
+                value={values.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                disabled={isSubmitting}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
+              />
+              {errors.email && (
+                <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                  <span className="w-4 h-4 text-red-500">⚠</span>
+                  {errors.email}
+                </p>
+              )}
+            </div>
+          </div>
 
-          {formErrors.password && <p className="text-sm text-red-600">{formErrors.password}</p>}
-          <input
-            type="password"
-            name="password"
-            placeholder="Şifre"
-            value={registerData.password}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
-          />
+          {/* Phone Input */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <Phone className="w-4 h-4" />
+              Telefon
+            </label>
+            <div className="relative">
+              <input
+                type="tel"
+                name="phone"
+                placeholder="+90 555 123 4567"
+                value={values.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                disabled={isSubmitting}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
+              />
+              {errors.phone && (
+                <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                  <span className="w-4 h-4 text-red-500">⚠</span>
+                  {errors.phone}
+                </p>
+              )}
+            </div>
+          </div>
 
-          {formErrors.confirmPassword && <p className="text-sm text-red-600">{formErrors.confirmPassword}</p>}
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="Şifre Tekrar"
-            value={registerData.confirmPassword}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded-md p-3 placeholder-black text-black"
-          />
+          {/* Password Input */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <Lock className="w-4 h-4" />
+              Şifre
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="••••••••"
+                value={values.password}
+                onChange={(e) => handleInputChange('password', e.target.value)}
+                disabled={isSubmitting}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500 pr-12"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                aria-label="Şifreyi Göster/Gizle"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+              {errors.password && (
+                <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                  <span className="w-4 h-4 text-red-500">⚠</span>
+                  {errors.password}
+                </p>
+              )}
+            </div>
+          </div>
 
+          {/* Confirm Password Input */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <Lock className="w-4 h-4" />
+              Şifre Tekrar
+            </label>
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                placeholder="••••••••"
+                value={values.confirmPassword}
+                onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                disabled={isSubmitting}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500 pr-12"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                aria-label="Şifreyi Göster/Gizle"
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+              {errors.confirmPassword && (
+                <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                  <span className="w-4 h-4 text-red-500">⚠</span>
+                  {errors.confirmPassword}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Register Button */}
           <button
             type="submit"
-            disabled={loading}
-            className="bg-indigo-600 text-white py-3 rounded-md hover:bg-indigo-700 transition disabled:opacity-50"
+            disabled={isSubmitting}
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
           >
-            {loading ? "Kayıt olunuyor..." : "Kayıt Ol"}
+            {isSubmitting ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Kayıt olunuyor...
+              </div>
+            ) : (
+              "Kayıt Ol"
+            )}
+          </button>
+
+          {/* Divider */}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-white text-gray-500">veya</span>
+            </div>
+          </div>
+
+          {/* Google Register Button */}
+          <button
+            onClick={handleGoogleRegister}
+            disabled={isSubmitting}
+            type="button"
+            className="w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-xl font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md flex items-center justify-center gap-3"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Google ile Kayıt Ol
           </button>
         </form>
 
-        <button
-          onClick={handleGoogleRegister}
-          className="mt-6 w-full bg-black text-white py-3 rounded-md flex items-center justify-center gap-3 hover:bg-gray-900 transition"
-        >
-          Google ile Kayıt Ol
-        </button>
-
-        <p className="mt-4 text-gray-600 text-sm">
-          Hesabınız var mı?{" "}
-          <a href="/auth/login" className="text-indigo-600 hover:text-indigo-800 font-semibold">
-            Giriş Yap
-          </a>
-        </p>
+        {/* Login Link */}
+        <div className="mt-8 text-center">
+          <p className="text-gray-600">
+            Zaten hesabınız var mı?{" "}
+            <a 
+              href="/auth/login" 
+              className="text-blue-600 hover:text-blue-700 font-semibold transition-colors duration-200"
+            >
+              Giriş Yap
+            </a>
+          </p>
+        </div>
+        </div>
       </div>
     </main>
   );

@@ -4,19 +4,18 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getCookie } from "@/app/utils/cookies"; 
 import { TrashIcon } from "@heroicons/react/24/outline";
+import AuthGuard from "@/app/components/AuthGuard";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 interface Workspace {
 	id: string;
 	name: string;
 }
 
-function deleteCookie(name: string) {
-	if (typeof document === "undefined") return;
-	document.cookie = `${name}=; Max-Age=0; path=/;`;
-}
 
 export default function WorkspacePage() {
 	const router = useRouter();
+	const { logout } = useAuth();
 	const [activeTab, setActiveTab] = useState<"mine" | "joined">("mine");
 	const [myWorkspaces, setMyWorkspaces] = useState<Workspace[]>([]);
 	const [joinedWorkspaces, setJoinedWorkspaces] = useState<Workspace[]>([]);
@@ -137,20 +136,20 @@ export default function WorkspacePage() {
 	};
 
 	const handleLogout = () => {
-		deleteCookie("userToken");
-		router.push("/auth/login");
+		logout(); 
 	};
 
 	const currentWorkspaces = activeTab === "mine" ? myWorkspaces : joinedWorkspaces;
 
 	return (
-		<main className="min-h-screen bg-gray-100 flex items-center justify-center p-8 relative">
+		<AuthGuard>
+			<main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-8 relative">
 
 			{/* Sağ üst köşe butonlar */}
 			<div className="fixed top-4 right-4 flex items-center gap-3 z-30">
 				<button
 					onClick={() => setModalOpen(true)}
-					className="bg-indigo-600 text-white px-3 py-1.5 rounded-md hover:bg-indigo-700 text-sm"
+					className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 py-2 rounded-lg hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
 				>
 					+ Workspace
 				</button>
@@ -158,18 +157,19 @@ export default function WorkspacePage() {
 				<div className="relative">
 					<button
 						onClick={() => setShowProfileMenu(!showProfileMenu)}
-						className="w-9 h-9 rounded-full bg-gray-300 text-gray-700 font-semibold hover:ring-2 ring-indigo-400"
+						className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
 					>
-						👤
+						Profil
 					</button>
 					{showProfileMenu && (
-						<div className="absolute right-0 mt-2 w-40 bg-white shadow-lg border rounded-md z-40">
-							<a href="/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+						<div className="absolute right-0 mt-2 w-44 bg-white shadow-xl border border-gray-200 rounded-lg z-40 overflow-hidden">
+							<a href="/profile" className="block px-4 py-3 text-gray-800 hover:bg-gray-50 transition-colors duration-200">
 								Profil Ayarları
 							</a>
+							<hr className="border-gray-200" />
 							<button
 								onClick={handleLogout}
-								className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
+								className="w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 transition-colors duration-200"
 							>
 								Çıkış Yap
 							</button>
@@ -179,25 +179,25 @@ export default function WorkspacePage() {
 			</div>
 
 			{/* Ortadaki içerik */}
-			<div className="w-full max-w-md bg-white shadow-md rounded-2xl p-6 text-center relative z-10">
-				<h1 className="text-2xl font-extrabold text-gray-900 mb-6 mt-2">Workspacelerim</h1>
+			<div className="w-full max-w-md bg-white/80 backdrop-blur-sm shadow-2xl rounded-3xl p-8 text-center relative z-10 border border-white/20">
+				<h1 className="text-3xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-8 mt-2">Workspacelerim</h1>
 
 				{/* Tabs */}
-				<div className="flex justify-center mb-6">
-					<div className="flex space-x-4">
+				<div className="flex justify-center mb-8">
+					<div className="flex space-x-1 bg-gradient-to-r from-gray-100 to-gray-50 p-1 rounded-xl shadow-inner">
 						<button
-							className={`px-4 py-2 rounded-full font-semibold transition ${activeTab === "mine"
-								? "bg-indigo-600 text-white"
-								: "bg-gray-200 text-gray-700 hover:bg-gray-300"
+							className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${activeTab === "mine"
+								? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg transform scale-105"
+								: "text-gray-600 hover:bg-white/70 hover:shadow-md hover:text-gray-800"
 								}`}
 							onClick={() => setActiveTab("mine")}
 						>
 							Benimkiler
 						</button>
 						<button
-							className={`px-4 py-2 rounded-full font-semibold transition ${activeTab === "joined"
-								? "bg-indigo-600 text-white"
-								: "bg-gray-200 text-gray-700 hover:bg-gray-300"
+							className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${activeTab === "joined"
+								? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg transform scale-105"
+								: "text-gray-600 hover:bg-white/70 hover:shadow-md hover:text-gray-800"
 								}`}
 							onClick={() => setActiveTab("joined")}
 						>
@@ -207,15 +207,15 @@ export default function WorkspacePage() {
 				</div>
 
 				{/* Workspace Listesi */}
-				<ul className="space-y-3">
+				<ul className="space-y-4">
 					{currentWorkspaces.length > 0 ? (
 						currentWorkspaces.map((ws) => (
 							<li
 								key={ws.id}
 								onClick={() => handleSelect(ws)}
-								className="bg-gray-50 flex justify-between items-center rounded-lg px-4 py-3 hover:bg-gray-100 transition cursor-pointer"
+								className="bg-gradient-to-r from-white to-gray-50/50 flex justify-between items-center rounded-xl px-6 py-4 hover:from-indigo-50 hover:to-purple-50 hover:border-indigo-200 border border-gray-200/50 transition-all duration-300 cursor-pointer group shadow-sm hover:shadow-lg transform hover:scale-[1.02]"
 							>
-								<span className="font-medium text-gray-900">
+								<span className="font-semibold text-gray-800 group-hover:text-indigo-700 transition-colors duration-300">
 									{ws.name}
 								</span>
 								{activeTab === "mine" && (
@@ -224,7 +224,8 @@ export default function WorkspacePage() {
 											e.stopPropagation(); // Delete butonuna tıklanınca yönlendirme olmasın
 											handleDelete(ws.id);
 										}}
-										className="text-gray-500 hover:text-red-500 transition"
+										className="text-gray-400 hover:text-red-500 transition-all duration-300 p-2 rounded-lg hover:bg-red-50 hover:shadow-md transform hover:scale-110"
+										title="Workspace'i sil"
 									>
 										<TrashIcon className="h-5 w-5" />
 									</button>
@@ -233,41 +234,55 @@ export default function WorkspacePage() {
 
 						))
 					) : (
-						<li className="text-gray-500 text-sm">Hiç workspace bulunamadı.</li>
+						<li className="text-gray-400 text-base py-8 bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-xl border border-gray-200/50">
+							<div className="flex flex-col items-center space-y-2">
+								<span className="text-2xl">📁</span>
+								<span>Hiç workspace bulunamadı</span>
+							</div>
+						</li>
 					)}
 				</ul>
 			</div>
 
-			{/* Modal burada aynı */}
+			{/* Modal */}
 			{modalOpen && (
 				<div
-					className="fixed inset-0 bg-white flex items-center justify-center z-20"
+					className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
 					onClick={() => setModalOpen(false)} // Arka plan tıklanırsa kapansın
 				>
 					<div
-						className="rounded-lg p-6 w-full max-w-md shadow-lg"
+						className="bg-white/95 backdrop-blur-sm rounded-2xl p-8 w-full max-w-md shadow-2xl border border-white/20"
 						onClick={(e) => e.stopPropagation()} // Modal içindeki tıklamayı durdur, arka plan kapanmasın
 					>
-						<h2 className="text-xl font-bold mb-4">Yeni Workspace Oluştur</h2>
+						<h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Yeni Workspace Oluştur</h2>
 						<input
 							type="text"
-							placeholder="Workspace adı"
+							placeholder="Workspace adı girin..."
 							value={newWorkspaceName}
 							onChange={(e) => setNewWorkspaceName(e.target.value)}
-							className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+							onKeyDown={(e) => {
+								if (e.key === 'Enter' && newWorkspaceName.trim() && !creating) {
+									handleCreateWorkspace();
+								}
+								if (e.key === 'Escape') {
+									setModalOpen(false);
+								}
+							}}
+							className="w-full border-2 border-gray-200 bg-white/80 text-gray-800 rounded-xl px-5 py-4 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition-all duration-300 placeholder-gray-400 shadow-sm"
+							autoFocus
 						/>
 						{createError && <p className="text-red-600 text-sm mb-2">{createError}</p>}
-						<div className="flex justify-end gap-3">
+						<div className="flex justify-end gap-4 mt-8">
 							<button
 								onClick={() => setModalOpen(false)}
-								className="px-4 py-2 rounded-md border"
+								className="px-6 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 font-semibold shadow-sm hover:shadow-md"
 							>
 								İptal
 							</button>
 							<button
 								onClick={handleCreateWorkspace}
-								disabled={creating}
-								className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition"
+								disabled={creating || !newWorkspaceName.trim()}
+								className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none"
 							>
 								{creating ? "Oluşturuluyor..." : "Oluştur"}
 							</button>
@@ -276,6 +291,6 @@ export default function WorkspacePage() {
 				</div>
 			)}
 		</main>
-
+		</AuthGuard>
 	);
 }

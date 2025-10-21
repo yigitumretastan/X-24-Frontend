@@ -1,12 +1,16 @@
 {
-  "name": "x24-web-next",
+  "name": "zeniva-frontend",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "bun@1.0.0",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean": "bun run clean:deps && bun run clean:cache",
+    "clean:deps": "rm -rf node_modules bun.lockb",
+    "clean:cache": "next clean"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.19",
@@ -16,24 +20,27 @@
     "@fullcalendar/timegrid": "^6.1.19",
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
+    "@microsoft/signalr": "^9.0.6",
     "axios": "^1.10.0",
     "lucide-react": "^0.523.0",
     "next": "15.3.4",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-icons": "^5.5.0",
     "react-select": "^5.10.1",
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
+    "@next/bundle-analyzer": "^15.5.6",
     "@types/node": "^20",
-    "@types/react": "^19.1.12",
-    "@types/react-dom": "^19.1.9",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "autoprefixer": "^10.4.21",
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
-    "tailwindcss": "^4",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
     "typescript": "^5.9.2"
   }
 }
