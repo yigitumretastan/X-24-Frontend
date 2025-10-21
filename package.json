@@ -2,14 +2,13 @@
   "name": "zeniva-frontend",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "bun@1.0.0",
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "clean": "bun run clean:deps && bun run clean:cache",
-    "clean:deps": "rm -rf node_modules bun.lockb",
+    "clean": "npm run clean:deps && npm run clean:cache",
+    "clean:deps": "rm -rf node_modules package-lock.json",
     "clean:cache": "next clean"
   },
   "dependencies": {
