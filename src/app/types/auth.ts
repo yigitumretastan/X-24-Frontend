@@ -18,7 +18,7 @@ export interface AuthState {
 }
 
 // Login
-export interface LoginRequest {
+export interface LoginRequest extends Record<string, unknown> {
   email: string;
   phone: string;
   password: string;
@@ -33,7 +33,7 @@ export interface LoginResponse {
 }
 
 // Register
-export interface RegisterRequest {
+export interface RegisterRequest extends Record<string, unknown> {
   name: string;
   lastName: string;
   email: string;
@@ -52,7 +52,7 @@ export interface RegisterResponse {
 }
 
 // Reset Password
-export interface ResetPasswordRequest {
+export interface ResetPasswordRequest extends Record<string, unknown> {
   email: string;
   token: string;
   newPassword: string;
