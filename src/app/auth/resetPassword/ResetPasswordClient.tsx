@@ -7,7 +7,7 @@ import { apiClient } from "@/app/lib/api";
 import { ResetPasswordRequest, ResetPasswordResponse } from "@/app/types/auth";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
-interface ResetFormData {
+interface ResetFormData extends Record<string, unknown> {
   password: string;
   confirmPassword: string;
 }
