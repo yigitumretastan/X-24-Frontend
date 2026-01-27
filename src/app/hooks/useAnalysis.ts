@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { 
-  AnalysisDashboard, 
-  DateRange, 
-  ChartData 
+import {
+  AnalysisDashboard,
+  DateRange,
+  ChartData
 } from "@/app/types/analysis";
 import { mockAnalysisDashboard } from "@/data/analysis/analysis";
 
@@ -90,7 +90,7 @@ export const useAnalysis = () => {
   const getPerformanceRadarData = (): ChartData => ({
     labels: [
       "Verimlilik",
-      "Etkinlik", 
+      "Etkinlik",
       "Kalite",
       "Zamanında Teslimat",
       "Takım Çalışması",
@@ -116,19 +116,20 @@ export const useAnalysis = () => {
   });
 
   // Data fetching (simulated)
-  const fetchAnalysisData = async () => {
+  const fetchAnalysisData = async (_range?: DateRange) => {
     try {
       setLoading(true);
       setError(null);
-      
+
+      console.log("Fetching analysis data for range:", _range);
       // TODO: Gerçek API çağrısı yapılacak
       // const { fetchAnalysisDataFromAPI } = await import("@/app/lib/endpoints");
       // const analysisData = await fetchAnalysisDataFromAPI(range || dateRange);
-      
+
       // Şimdilik mock data kullanıyoruz
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
       setData(mockAnalysisDashboard);
-      
+
     } catch (err) {
       console.error("Analysis data yüklenirken hata:", err);
       setError("Analiz verileri yüklenirken bir hata oluştu.");
@@ -166,19 +167,19 @@ export const useAnalysis = () => {
     updateDateRange,
     refreshData,
     exportData,
-    
+
     // Chart data getters
     getTaskStatusChartData,
     getTaskPriorityChartData,
     getTimeAnalyticsChartData,
     getProjectProgressChartData,
     getPerformanceRadarData,
-    
+
     // Computed values
     completionRate: Math.round((data.stats.completedTasks / data.stats.totalTasks) * 100),
     activeTasksCount: data.stats.inProgressTasks + data.stats.pendingTasks,
     averageProductivity: Math.round((data.performanceMetrics.productivity + data.performanceMetrics.efficiency) / 2),
-    
+
     // Helper functions
     getStatusColor: (status: string) => {
       const colors = {
@@ -191,7 +192,7 @@ export const useAnalysis = () => {
       };
       return colors[status as keyof typeof colors] || 'gray';
     },
-    
+
     formatHours: (hours: number) => {
       const h = Math.floor(hours);
       const m = Math.round((hours - h) * 60);

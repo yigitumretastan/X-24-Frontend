@@ -19,7 +19,7 @@ Zeniva Frontend, ASP.NET Core backend ile RESTful API ve SignalR üzerinden ilet
 
 ### Base URL'ler
 - **Development**: `https://localhost:7171`
-- **Staging**: `https://staging-api.zeniva.com`
+- **Staging**: `https://localhost:7171`
 - **Production**: `https://api.zeniva.com`
 
 ### API Versiyonu

@@ -27,6 +27,7 @@ const DiskComponent = () => {
     totalPages,
     formatFileSize,
     getFileIcon,
+    clearFilters,
   } = useDisk();
 
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
@@ -38,14 +39,12 @@ const DiskComponent = () => {
     return (
       <div className="flex items-center justify-center py-16">
         <div className="text-center">
-          <div className={`w-16 h-16 border-4 rounded-full animate-spin mx-auto mb-4 ${
-            theme === 'dark'
+          <div className={`w-16 h-16 border-4 rounded-full animate-spin mx-auto mb-4 ${theme === 'dark'
               ? 'border-gray-700 border-t-blue-400'
               : 'border-blue-200 border-t-blue-600'
-          }`}></div>
-          <p className={`text-lg font-medium ${
-            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-          }`}>Disk verileri yükleniyor...</p>
+            }`}></div>
+          <p className={`text-lg font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+            }`}>Disk verileri yükleniyor...</p>
         </div>
       </div>
     );
@@ -56,12 +55,10 @@ const DiskComponent = () => {
       <div className="flex items-center justify-center py-16">
         <div className="text-center">
           <div className="text-red-500 text-6xl mb-4">⚠️</div>
-          <h2 className={`text-2xl font-bold mb-2 ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>Hata Oluştu</h2>
-          <p className={`text-lg mb-4 ${
-            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-          }`}>{error}</p>
+          <h2 className={`text-2xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}>Hata Oluştu</h2>
+          <p className={`text-lg mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+            }`}>{error}</p>
         </div>
       </div>
     );
@@ -114,45 +111,40 @@ const DiskComponent = () => {
 
 
   return (
-    <div className={`transition-colors duration-300 ${
-      theme === 'dark' ? 'text-white' : 'text-gray-900'
-    }`}>
+    <div className={`transition-colors duration-300 ${theme === 'dark' ? 'text-white' : 'text-gray-900'
+      }`}>
       {/* Page Header - Inline */}
       <div className="mb-8">
         <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-4 lg:space-y-0">
           {/* Title Section */}
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-3">
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                theme === 'dark'
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${theme === 'dark'
                   ? 'bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg shadow-blue-500/25'
                   : 'bg-gradient-to-br from-blue-500 to-purple-500 shadow-lg shadow-blue-500/25'
-              }`}>
+                }`}>
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
                 </svg>
               </div>
               <div>
-                <h1 className={`text-3xl font-bold bg-gradient-to-r ${
-                  theme === 'dark'
+                <h1 className={`text-3xl font-bold bg-gradient-to-r ${theme === 'dark'
                     ? 'from-white to-gray-300 bg-clip-text text-transparent'
                     : 'from-gray-900 to-gray-600 bg-clip-text text-transparent'
-                }`}>
+                  }`}>
                   Disk Yönetimi
                 </h1>
-                <p className={`text-sm ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                }`}>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
                   Dosyalarınızı yönetin ve disk kullanımınızı takip edin
                 </p>
               </div>
             </div>
-            
-            <div className={`hidden md:flex items-center space-x-2 px-4 py-2 rounded-full ${
-              theme === 'dark' 
-                ? 'bg-gray-800/50 text-gray-300 border border-gray-700/50' 
+
+            <div className={`hidden md:flex items-center space-x-2 px-4 py-2 rounded-full ${theme === 'dark'
+                ? 'bg-gray-800/50 text-gray-300 border border-gray-700/50'
                 : 'bg-gray-100/80 text-gray-600 border border-gray-200/50'
-            }`}>
+              }`}>
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
               <span className="text-sm font-medium">
                 {files.length} Dosya
@@ -164,11 +156,10 @@ const DiskComponent = () => {
           <div className="flex items-center space-x-4">
             <button
               onClick={() => setShowUploadModal(true)}
-              className={`group relative flex items-center px-6 py-3 space-x-2 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 ${
-                theme === 'dark'
+              className={`group relative flex items-center px-6 py-3 space-x-2 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 ${theme === 'dark'
                   ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40'
                   : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40'
-              }`}
+                }`}
             >
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <svg className="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,31 +173,27 @@ const DiskComponent = () => {
 
 
       {/* Kontroller */}
-      <div className={`mb-8 p-6 rounded-3xl shadow-lg border backdrop-blur-sm ${
-        theme === 'dark'
+      <div className={`mb-8 p-6 rounded-3xl shadow-lg border backdrop-blur-sm ${theme === 'dark'
           ? 'bg-gradient-to-br from-gray-800/90 to-gray-900/90 border-gray-700/50'
           : 'bg-gradient-to-br from-white/95 to-gray-50/95 border-gray-200/50'
-      }`}>
+        }`}>
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
           {/* Arama */}
           <div className="flex-1 lg:max-w-md">
             <div className="relative group">
-              <div className={`absolute inset-0 rounded-2xl transition-all duration-300 ${
-                theme === 'dark'
+              <div className={`absolute inset-0 rounded-2xl transition-all duration-300 ${theme === 'dark'
                   ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 opacity-0 group-focus-within:opacity-100'
                   : 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-focus-within:opacity-100'
-              } blur-xl`}></div>
-              
-              <div className={`relative backdrop-blur-sm border rounded-2xl transition-all duration-300 ${
-                theme === 'dark'
+                } blur-xl`}></div>
+
+              <div className={`relative backdrop-blur-sm border rounded-2xl transition-all duration-300 ${theme === 'dark'
                   ? 'bg-gray-800/50 border-gray-700/50 group-focus-within:border-blue-500/50 group-focus-within:bg-gray-800/80'
                   : 'bg-white/80 border-gray-300/50 group-focus-within:border-blue-500/50 group-focus-within:bg-white/95'
-              }`}>
-                <svg className={`w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
-                  theme === 'dark' 
-                    ? 'text-gray-400 group-focus-within:text-blue-400' 
+                }`}>
+                <svg className={`w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${theme === 'dark'
+                    ? 'text-gray-400 group-focus-within:text-blue-400'
                     : 'text-gray-500 group-focus-within:text-blue-500'
-                }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input
@@ -214,11 +201,10 @@ const DiskComponent = () => {
                   placeholder="Dosya ara..."
                   value={searchQuery}
                   onChange={(e) => searchFiles(e.target.value)}
-                  className={`w-full pl-12 pr-4 py-3 bg-transparent outline-none transition-colors duration-300 placeholder:transition-colors placeholder:duration-300 ${
-                    theme === 'dark'
+                  className={`w-full pl-12 pr-4 py-3 bg-transparent outline-none transition-colors duration-300 placeholder:transition-colors placeholder:duration-300 ${theme === 'dark'
                       ? 'text-white placeholder:text-gray-400 focus:placeholder:text-gray-500'
                       : 'text-gray-900 placeholder:text-gray-500 focus:placeholder:text-gray-400'
-                  }`}
+                    }`}
                 />
               </div>
             </div>
@@ -231,11 +217,10 @@ const DiskComponent = () => {
               <select
                 value={filter.type || 'all'}
                 onChange={(e) => setFilter({ ...filter, type: e.target.value as any })}
-                className={`appearance-none px-4 py-3 pr-10 rounded-2xl border cursor-pointer transition-all duration-300 ${
-                  theme === 'dark' 
-                    ? 'bg-gray-800/50 border-gray-700/50 text-white hover:border-gray-600/50 focus:border-blue-500/50' 
+                className={`appearance-none px-4 py-3 pr-10 rounded-2xl border cursor-pointer transition-all duration-300 ${theme === 'dark'
+                    ? 'bg-gray-800/50 border-gray-700/50 text-white hover:border-gray-600/50 focus:border-blue-500/50'
                     : 'bg-white/80 border-gray-300/50 text-gray-900 hover:border-gray-400/50 focus:border-blue-500/50'
-                } focus:ring-0 focus:outline-none backdrop-blur-sm`}
+                  } focus:ring-0 focus:outline-none backdrop-blur-sm`}
               >
                 <option value="all">📁 Tüm Türler</option>
                 <option value="pdf">📕 PDF</option>
@@ -261,11 +246,10 @@ const DiskComponent = () => {
                   const [field, direction] = e.target.value.split('-');
                   setSort({ field: field as any, direction: direction as any });
                 }}
-                className={`appearance-none px-4 py-3 pr-10 rounded-2xl border cursor-pointer transition-all duration-300 ${
-                  theme === 'dark' 
-                    ? 'bg-gray-800/50 border-gray-700/50 text-white hover:border-gray-600/50 focus:border-blue-500/50' 
+                className={`appearance-none px-4 py-3 pr-10 rounded-2xl border cursor-pointer transition-all duration-300 ${theme === 'dark'
+                    ? 'bg-gray-800/50 border-gray-700/50 text-white hover:border-gray-600/50 focus:border-blue-500/50'
                     : 'bg-white/80 border-gray-300/50 text-gray-900 hover:border-gray-400/50 focus:border-blue-500/50'
-                } focus:ring-0 focus:outline-none backdrop-blur-sm`}
+                  } focus:ring-0 focus:outline-none backdrop-blur-sm`}
               >
                 <option value="uploadDate-desc">🕒 En Yeni</option>
                 <option value="uploadDate-asc">🕐 En Eski</option>
@@ -284,18 +268,16 @@ const DiskComponent = () => {
             {/* Görünüm ve Kontrol Butonları */}
             <div className="flex items-center gap-2">
               {/* Görünüm Seçici */}
-              <div className={`flex rounded-2xl p-1 ${
-                theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-100/80'
-              }`}>
+              <div className={`flex rounded-2xl p-1 ${theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-100/80'
+                }`}>
                 <button
                   onClick={() => setView({ ...view, mode: 'grid' })}
-                  className={`p-3 rounded-xl transition-all duration-300 ${
-                    view.mode === 'grid'
+                  className={`p-3 rounded-xl transition-all duration-300 ${view.mode === 'grid'
                       ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
                       : theme === 'dark'
-                      ? 'text-gray-400 hover:text-white hover:bg-gray-600/50'
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/80'
-                  }`}
+                        ? 'text-gray-400 hover:text-white hover:bg-gray-600/50'
+                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/80'
+                    }`}
                   title="Grid Görünümü"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -304,13 +286,12 @@ const DiskComponent = () => {
                 </button>
                 <button
                   onClick={() => setView({ ...view, mode: 'list' })}
-                  className={`p-3 rounded-xl transition-all duration-300 ${
-                    view.mode === 'list'
+                  className={`p-3 rounded-xl transition-all duration-300 ${view.mode === 'list'
                       ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
                       : theme === 'dark'
-                      ? 'text-gray-400 hover:text-white hover:bg-gray-600/50'
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/80'
-                  }`}
+                        ? 'text-gray-400 hover:text-white hover:bg-gray-600/50'
+                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/80'
+                    }`}
                   title="Liste Görünümü"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -323,11 +304,10 @@ const DiskComponent = () => {
               {(filter.type !== 'all' || searchQuery) && (
                 <button
                   onClick={clearFilters}
-                  className={`px-4 py-3 rounded-2xl transition-all duration-300 ${
-                    theme === 'dark' 
-                      ? 'bg-red-900/50 hover:bg-red-800/50 text-red-300 border border-red-700/50' 
+                  className={`px-4 py-3 rounded-2xl transition-all duration-300 ${theme === 'dark'
+                      ? 'bg-red-900/50 hover:bg-red-800/50 text-red-300 border border-red-700/50'
                       : 'bg-red-100/80 hover:bg-red-200/80 text-red-700 border border-red-200/50'
-                  }`}
+                    }`}
                   title="Filtreleri Temizle"
                 >
                   <svg className="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -342,11 +322,10 @@ const DiskComponent = () => {
       </div>
 
       {/* Dosya Listesi */}
-      <div className={`p-6 rounded-3xl shadow-lg border backdrop-blur-sm ${
-        theme === 'dark'
+      <div className={`p-6 rounded-3xl shadow-lg border backdrop-blur-sm ${theme === 'dark'
           ? 'bg-gradient-to-br from-gray-800/90 to-gray-900/90 border-gray-700/50'
           : 'bg-gradient-to-br from-white/95 to-gray-50/95 border-gray-200/50'
-      }`}>
+        }`}>
         {/* Toplu Seçim */}
         <div className="flex items-center gap-2 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
           <input
@@ -392,27 +371,25 @@ const DiskComponent = () => {
             <button
               onClick={() => setView({ ...view, currentPage: Math.max(1, view.currentPage - 1) })}
               disabled={view.currentPage === 1}
-              className={`px-3 py-1 rounded ${
-                view.currentPage === 1
+              className={`px-3 py-1 rounded ${view.currentPage === 1
                   ? 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed'
                   : 'bg-blue-600 hover:bg-blue-700 text-white'
-              }`}
+                }`}
             >
               ←
             </button>
-            
+
             <span className="text-sm">
               Sayfa {view.currentPage} / {totalPages}
             </span>
-            
+
             <button
               onClick={() => setView({ ...view, currentPage: Math.min(totalPages, view.currentPage + 1) })}
               disabled={view.currentPage === totalPages}
-              className={`px-3 py-1 rounded ${
-                view.currentPage === totalPages
+              className={`px-3 py-1 rounded ${view.currentPage === totalPages
                   ? 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed'
                   : 'bg-blue-600 hover:bg-blue-700 text-white'
-              }`}
+                }`}
             >
               →
             </button>
@@ -428,20 +405,18 @@ const DiskComponent = () => {
             <input
               type="file"
               onChange={handleFileUpload}
-              className={`w-full p-2 border rounded-lg ${
-                theme === "dark" 
-                  ? "bg-gray-700 border-gray-600" 
+              className={`w-full p-2 border rounded-lg ${theme === "dark"
+                  ? "bg-gray-700 border-gray-600"
                   : "bg-white border-gray-300"
-              }`}
+                }`}
             />
             <div className="flex gap-2 mt-4">
               <button
                 onClick={() => setShowUploadModal(false)}
-                className={`flex-1 px-4 py-2 rounded-lg ${
-                  theme === "dark" 
-                    ? "bg-gray-700 hover:bg-gray-600" 
+                className={`flex-1 px-4 py-2 rounded-lg ${theme === "dark"
+                    ? "bg-gray-700 hover:bg-gray-600"
                     : "bg-gray-200 hover:bg-gray-300"
-                } transition-colors`}
+                  } transition-colors`}
               >
                 İptal
               </button>
@@ -506,13 +481,12 @@ const FileItem: React.FC<FileItemProps> = ({
 
   if (viewMode === 'list') {
     return (
-      <div className={`flex items-center gap-3 p-3 rounded-lg border ${
-        isSelected 
-          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
-          : theme === "dark" 
-            ? "border-gray-700 hover:bg-gray-700" 
+      <div className={`flex items-center gap-3 p-3 rounded-lg border ${isSelected
+          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+          : theme === "dark"
+            ? "border-gray-700 hover:bg-gray-700"
             : "border-gray-200 hover:bg-gray-50"
-      } transition-colors`}>
+        } transition-colors`}>
         <input
           type="checkbox"
           checked={isSelected}
@@ -554,13 +528,12 @@ const FileItem: React.FC<FileItemProps> = ({
   }
 
   return (
-    <div className={`p-4 rounded-lg border ${
-      isSelected 
-        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
-        : theme === "dark" 
-          ? "border-gray-700 hover:bg-gray-700" 
+    <div className={`p-4 rounded-lg border ${isSelected
+        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+        : theme === "dark"
+          ? "border-gray-700 hover:bg-gray-700"
           : "border-gray-200 hover:bg-gray-50"
-    } transition-colors`}>
+      } transition-colors`}>
       <div className="flex items-start gap-2 mb-2">
         <input
           type="checkbox"
@@ -570,19 +543,19 @@ const FileItem: React.FC<FileItemProps> = ({
         />
         <div className="text-3xl">{getFileIcon(file.type)}</div>
       </div>
-      
+
       <h4 className="font-medium text-sm mb-1 truncate" title={file.name}>
         {file.name}
       </h4>
-      
+
       <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
         {file.source}
       </p>
-      
+
       <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
         {formatFileSize(file.size)}
       </p>
-      
+
       <div className="flex gap-1">
         <button
           onClick={onView}

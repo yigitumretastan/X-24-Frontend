@@ -38,9 +38,9 @@ ANALYZE=false
 ### Staging Environment
 ```env
 NODE_ENV=production
-NEXT_PUBLIC_API_BASE_URL=https://staging-api.zeniva.com
-NEXT_PUBLIC_API_URL=https://staging-api.zeniva.com/api
-NEXT_PUBLIC_SIGNALR_HUB_URL=https://staging-api.zeniva.com/hubs
+NEXT_PUBLIC_API_BASE_URL=https://localhost:7171
+NEXT_PUBLIC_API_URL=https://localhost:7171/api
+NEXT_PUBLIC_SIGNALR_HUB_URL=https://localhost:7171/hubs
 NEXT_PUBLIC_APP_NAME=Zeniva Staging
 NEXT_PUBLIC_APP_VERSION=1.0.0-staging
 ```

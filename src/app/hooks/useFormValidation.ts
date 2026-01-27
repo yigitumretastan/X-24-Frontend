@@ -74,9 +74,9 @@ export function useFormValidation<T extends Record<string, unknown>>(
 
   const validateAllFields = useCallback((): FormErrors => {
     const newErrors: FormErrors = {};
-    
+
     Object.keys(validationRules).forEach((fieldName) => {
-      const value = values[fieldName] || '';
+      const value = (values[fieldName] as string) || '';
       const error = validateField(fieldName, value);
       if (error) {
         newErrors[fieldName] = error;
@@ -89,7 +89,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
   // Handle input change
   const handleChange = useCallback((name: keyof T, value: string) => {
     setValues(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear field error when user starts typing
     if (errors[name as string]) {
       setErrors(prev => ({ ...prev, [name as string]: '' }));
@@ -104,7 +104,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
 
       // Validate all fields
       const validationErrors = validateAllFields();
-      
+
       if (Object.keys(validationErrors).length > 0) {
         setErrors(validationErrors);
         setIsSubmitting(false);
@@ -166,19 +166,19 @@ export const authValidationRules = {
   registerRules: {
     name: { required: true, minLength: 2, maxLength: 50 },
     lastName: { required: true, minLength: 2, maxLength: 50 },
-    email: { 
-      required: true, 
-      pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ 
+    email: {
+      required: true,
+      pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     },
-    phone: { 
-      required: true, 
-      pattern: /^[0-9]{10,15}$/ 
+    phone: {
+      required: true,
+      pattern: /^[0-9]{10,15}$/
     },
-    password: { 
-      required: true, 
-      pattern: /^(?=.*[A-Z])(?=.*\d).{6,}$/ 
+    password: {
+      required: true,
+      pattern: /^(?=.*[A-Z])(?=.*\d).{6,}$/
     },
-    confirmPassword: { 
+    confirmPassword: {
       required: true,
       custom: (value: string, formValues?: any) => {
         if (formValues && value !== formValues.password) {
@@ -191,11 +191,11 @@ export const authValidationRules = {
 
   // Reset password rules
   resetPasswordRules: {
-    password: { 
-      required: true, 
-      pattern: /^(?=.*[A-Z])(?=.*\d).{6,}$/ 
+    password: {
+      required: true,
+      pattern: /^(?=.*[A-Z])(?=.*\d).{6,}$/
     },
-    confirmPassword: { 
+    confirmPassword: {
       required: true,
       custom: (value: string, formValues?: any) => {
         if (formValues && value !== formValues.password) {

@@ -1,12 +1,14 @@
 import { useState, useEffect, useMemo } from "react";
-import { 
-  Project, 
-  ProjectFilters, 
+import {
+  Project,
+  ProjectFilters,
   CreateProjectData,
   ProjectStats
 } from "@/app/types/projects";
-import { 
-  mockProjects
+import {
+  mockProjects,
+  mockProjectTemplates,
+  mockProjectActivities
 } from "@/data/projects/projects";
 
 export const useProjects = () => {
@@ -17,7 +19,7 @@ export const useProjects = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'kanban'>('grid');
-  
+
   // Filters
   const [filters, setFilters] = useState<ProjectFilters>({
     status: [],
@@ -36,11 +38,11 @@ export const useProjects = () => {
       completedProjects: projects.filter(p => p.status === 'completed').length,
       pausedProjects: projects.filter(p => p.status === 'paused').length,
       totalTasks: projects.reduce((sum, p) => sum + p.tasks.length, 0),
-      completedTasks: projects.reduce((sum, p) => 
+      completedTasks: projects.reduce((sum, p) =>
         sum + p.tasks.filter(t => t.status === 'completed').length, 0
       ),
-      overdueTasks: projects.reduce((sum, p) => 
-        sum + p.tasks.filter(t => 
+      overdueTasks: projects.reduce((sum, p) =>
+        sum + p.tasks.filter(t =>
           t.dueDate && new Date(t.dueDate) < new Date() && t.status !== 'completed'
         ).length, 0
       ),
@@ -56,7 +58,7 @@ export const useProjects = () => {
       // Search filter
       if (filters.search) {
         const searchLower = filters.search.toLowerCase();
-        const matchesSearch = 
+        const matchesSearch =
           project.name.toLowerCase().includes(searchLower) ||
           project.description.toLowerCase().includes(searchLower) ||
           project.tags.some(tag => tag.toLowerCase().includes(searchLower));
@@ -80,7 +82,7 @@ export const useProjects = () => {
 
       // Members filter
       if (filters.members.length > 0) {
-        const hasMatchingMember = project.assignedMembers.some(member => 
+        const hasMatchingMember = project.assignedMembers.some(member =>
           filters.members.includes(member.id)
         );
         if (!hasMatchingMember) return false;
@@ -134,7 +136,7 @@ export const useProjects = () => {
 
       setProjects(prev => [newProject, ...prev]);
       setShowCreateModal(false);
-      
+
       return newProject;
     } catch (err) {
       console.error("Proje oluşturulurken hata:", err);
@@ -154,8 +156,8 @@ export const useProjects = () => {
       // const { updateProjectFromAPI } = await import("@/app/lib/endpoints");
       // const updatedProject = await updateProjectFromAPI(projectId, updates);
 
-      setProjects(prev => prev.map(project => 
-        project.id === projectId 
+      setProjects(prev => prev.map(project =>
+        project.id === projectId
           ? { ...project, ...updates, updatedAt: new Date().toISOString() }
           : project
       ));
@@ -182,7 +184,7 @@ export const useProjects = () => {
       // await deleteProjectFromAPI(projectId);
 
       setProjects(prev => prev.filter(project => project.id !== projectId));
-      
+
       if (selectedProject?.id === projectId) {
         setSelectedProject(null);
         setShowDetailModal(false);
@@ -268,9 +270,9 @@ export const useProjects = () => {
   };
 
   const getOverdueProjects = () => {
-    return projects.filter(project => 
-      project.deadline && 
-      new Date(project.deadline) < new Date() && 
+    return projects.filter(project =>
+      project.deadline &&
+      new Date(project.deadline) < new Date() &&
       project.status !== 'completed'
     );
   };
@@ -278,7 +280,7 @@ export const useProjects = () => {
   const getProjectProgress = (projectId: string) => {
     const project = projects.find(p => p.id === projectId);
     if (!project || project.tasks.length === 0) return 0;
-    
+
     const completedTasks = project.tasks.filter(t => t.status === 'completed').length;
     return Math.round((completedTasks / project.tasks.length) * 100);
   };
@@ -309,11 +311,11 @@ export const useProjects = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       // TODO: Gerçek API çağrısı yapılacak
       // const { fetchProjectsFromAPI } = await import("@/app/lib/endpoints");
       // const projectsData = await fetchProjectsFromAPI();
-      
+
       // Şimdilik mock data kullanıyoruz
       setProjects(mockProjects);
     } catch (err) {
@@ -336,43 +338,43 @@ export const useProjects = () => {
     selectedProject,
     loading,
     error,
-    
+
     // UI State
     viewMode,
     setViewMode,
     showCreateModal,
     showDetailModal,
     filters,
-    
+
     // Operations
     createProject,
     updateProject,
     deleteProject,
     duplicateProject,
-    
+
     // Filters
     updateFilters,
     clearFilters,
-    
+
     // Modals
     openProjectDetail,
     closeProjectDetail,
     openCreateModal,
     closeCreateModal,
-    
+
     // Utilities
     getProjectsByStatus,
     getOverdueProjects,
     getProjectProgress,
     getStatusColor,
     getPriorityColor,
-    
+
     // Refresh
     refreshProjects: fetchProjects,
-    
+
     // Templates
     templates: mockProjectTemplates,
-    
+
     // Activities
     recentActivities: mockProjectActivities
   };
