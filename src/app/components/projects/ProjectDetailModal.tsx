@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { Project } from "@/app/types/projects";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 import {
   X,
   Calendar,

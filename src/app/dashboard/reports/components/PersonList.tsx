@@ -1,6 +1,6 @@
 "use client";
 
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 import { Search, MessageCircle } from "lucide-react";
 import { Person } from "@/app/hooks/useReports";
 

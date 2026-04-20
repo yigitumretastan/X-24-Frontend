@@ -5,7 +5,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 import { useCalendar } from "@/app/hooks/useCalendar";
 import TaskModal from "./TaskModal";
 import { Calendar, Plus, Clock, CheckCircle, Users, TrendingUp } from "lucide-react";

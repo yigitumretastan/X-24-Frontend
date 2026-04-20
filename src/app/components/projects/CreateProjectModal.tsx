@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { ProjectForm, CreateProjectData } from "@/app/types/projects";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 import {
   X,
   Plus,

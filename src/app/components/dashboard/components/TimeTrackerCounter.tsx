@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { getCookie } from "@/app/utils/cookies";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 
 interface ModalProps {
 	onClose: () => void;

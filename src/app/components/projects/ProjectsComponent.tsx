@@ -1,7 +1,7 @@
 "use client";
 
 import { useProjects } from "@/app/hooks/useProjects";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 import {
   FolderOpen,
   Plus,

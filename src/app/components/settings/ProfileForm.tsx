@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 import { User, Mail, Briefcase, Calendar, Globe, Clock, Save, Camera, MapPin } from "lucide-react";
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -260,22 +260,29 @@ export default function ProfileForm() {
 					
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<div>
-							<label className={`block text-sm font-medium mb-2 ${
+							<label className={`block text-sm font-semibold mb-2 ${
 								theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
 							}`}>
 								Ad Soyad
 							</label>
-							<input
-								type="text"
-								value={userName}
-								onChange={(e) => setUserName(e.target.value)}
-								className="form-input"
-								placeholder="Adınızı ve soyadınızı girin"
-							/>
+							<div className="relative">
+								<User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+								<input
+									type="text"
+									value={userName}
+									onChange={(e) => setUserName(e.target.value)}
+									className={`w-full pl-10 pr-4 py-3 rounded-xl border transition-all duration-200 outline-none ${
+										theme === 'dark'
+											? 'bg-gray-800 border-gray-700 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+											: 'bg-white border-gray-200 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-sm'
+									}`}
+									placeholder="Adınızı ve soyadınızı girin"
+								/>
+							</div>
 						</div>
 
 						<div>
-							<label className={`block text-sm font-medium mb-2 ${
+							<label className={`block text-sm font-semibold mb-2 ${
 								theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
 							}`}>
 								E-posta Adresi
@@ -286,14 +293,18 @@ export default function ProfileForm() {
 									type="email"
 									value={userEmail}
 									onChange={(e) => setUserEmail(e.target.value)}
-									className="form-input pl-10"
+									className={`w-full pl-10 pr-4 py-3 rounded-xl border transition-all duration-200 outline-none ${
+										theme === 'dark'
+											? 'bg-gray-800 border-gray-700 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+											: 'bg-white border-gray-200 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-sm'
+									}`}
 									placeholder="email@example.com"
 								/>
 							</div>
 						</div>
 
 						<div className="md:col-span-2">
-							<label className={`block text-sm font-medium mb-2 ${
+							<label className={`block text-sm font-semibold mb-2 ${
 								theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
 							}`}>
 								Meslek / Pozisyon
@@ -304,7 +315,11 @@ export default function ProfileForm() {
 									type="text"
 									value={userJobTitle}
 									onChange={(e) => setUserJobTitle(e.target.value)}
-									className="form-input pl-10"
+									className={`w-full pl-10 pr-4 py-3 rounded-xl border transition-all duration-200 outline-none ${
+										theme === 'dark'
+											? 'bg-gray-800 border-gray-700 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+											: 'bg-white border-gray-200 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-sm'
+									}`}
 									placeholder="Ör: Frontend Developer, Proje Yöneticisi"
 								/>
 							</div>

@@ -1,4 +1,4 @@
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 
 export default function DataSettings() {
   const { theme } = useTheme();

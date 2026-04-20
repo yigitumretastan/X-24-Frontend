@@ -1,6 +1,6 @@
 "use client";
 
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 import { Share2 } from "lucide-react";
 import { Report } from "@/app/hooks/useReports";
 

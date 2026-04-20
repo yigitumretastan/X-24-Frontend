@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "./contexts/AuthContext";
 import { SignalRProvider } from "./contexts/SignalRContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -41,18 +42,20 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
 				<ThemeProvider>
-					<AuthProvider>
-						<SignalRProvider>
-							<ToastProvider>
-								{children}
-							</ToastProvider>
-						</SignalRProvider>
-					</AuthProvider>
+					<TooltipProvider delay={0}>
+						<AuthProvider>
+							<SignalRProvider>
+								<ToastProvider>
+									{children}
+								</ToastProvider>
+							</SignalRProvider>
+						</AuthProvider>
+					</TooltipProvider>
 				</ThemeProvider>
 			</body>
 		</html>

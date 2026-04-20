@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 
 interface InviteModalProps {
   isOpen: boolean;
@@ -81,7 +81,11 @@ export default function InviteModal({ isOpen, onClose, onInvite, triggerRef }: I
           placeholder="ornek@email.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="form-input"
+          className={`w-full px-4 py-3 rounded-xl border transition-all duration-200 outline-none ${
+            theme === 'dark'
+              ? 'bg-gray-800 border-gray-700 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+              : 'bg-white border-gray-200 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-sm'
+          }`}
         />
       </div>
 
@@ -94,7 +98,11 @@ export default function InviteModal({ isOpen, onClose, onInvite, triggerRef }: I
         <select
           value={role}
           onChange={(e) => setRole(Number(e.target.value))}
-          className="form-input cursor-pointer"
+          className={`w-full px-4 py-3 rounded-xl border transition-all duration-200 outline-none cursor-pointer appearance-none ${
+            theme === 'dark'
+              ? 'bg-gray-800 border-gray-700 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+              : 'bg-white border-gray-200 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-sm'
+          }`}
         >
           <option value={1}>Üye</option>
           <option value={2}>Moderatör</option>
@@ -112,7 +120,11 @@ export default function InviteModal({ isOpen, onClose, onInvite, triggerRef }: I
           placeholder="Kişiye özel bir mesaj yazabilirsiniz..."
           value={invitationMessage}
           onChange={(e) => setInvitationMessage(e.target.value)}
-          className="form-input resize-none min-h-[80px]"
+          className={`w-full px-4 py-3 rounded-xl border transition-all duration-200 outline-none resize-none min-h-[100px] ${
+            theme === 'dark'
+              ? 'bg-gray-800 border-gray-700 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+              : 'bg-white border-gray-200 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-sm'
+          }`}
           rows={3}
         />
       </div>

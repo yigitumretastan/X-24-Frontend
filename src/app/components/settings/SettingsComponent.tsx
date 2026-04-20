@@ -1,6 +1,6 @@
 "use client";
 
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 import { useSettings } from "@/app/hooks/useSettings";
 import ProfileForm from "./ProfileForm";
 import AppearanceSettings from "./AppearanceSettings";
@@ -8,11 +8,22 @@ import SecuritySettings from "./SecuritySettings";
 import NotificationSettings from "./NotificationSettings";
 import DataSettings from "./DataSettings";
 import ApiSettings from "./ApiSettings";
+import MailSettings from "./MailSettings";
 import { User } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function SettingsComponent() {
   const { theme } = useTheme();
   const { activeTab, tabs, handleTabChange } = useSettings();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div className="h-screen w-full" />; // Hydration için boş iskelet
+  }
 
   return (
     <div className={`h-screen flex flex-col transition-all duration-300 ${
@@ -117,6 +128,7 @@ export default function SettingsComponent() {
                   {activeTab === "notifications" && <NotificationSettings />}
                   {activeTab === "data" && <DataSettings />}
                   {activeTab === "api" && <ApiSettings />}
+                  {activeTab === "mail" && <MailSettings />}
                 </div>
               </div>
             </div>

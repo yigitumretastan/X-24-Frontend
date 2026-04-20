@@ -1,7 +1,7 @@
 "use client";
 
 import { useAnalysis } from "@/app/hooks/useAnalysis";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 import {
   BarChart3,
   TrendingUp,

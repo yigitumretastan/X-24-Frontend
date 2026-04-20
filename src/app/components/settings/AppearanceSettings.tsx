@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 import { Palette, Monitor, Sun, Moon, Smartphone, Eye, Zap, Sparkles } from "lucide-react";
 
 export default function AppearanceSettings() {

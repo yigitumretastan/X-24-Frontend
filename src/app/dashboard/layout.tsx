@@ -5,7 +5,6 @@ import Header from "../components/dashboard/Header";
 import Sidebar from "../components/dashboard/Sidebar";
 import RightPanel from "../components/dashboard/RightPanel";
 import AuthGuard from "@/app/components/AuthGuard";
-import { useTheme } from "@/app/contexts/ThemeContext";
 
 interface SidebarContextType {
   isCollapsed: boolean;
@@ -28,7 +27,6 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { theme } = useTheme();
   
   return (
     <AuthGuard>
@@ -60,7 +58,7 @@ export default function DashboardLayout({
               </main>
 
               {/* Right Panel */}
-              <aside className="hidden xl:block w-[320px] flex-shrink-0 border-l border-border bg-background overflow-y-auto">
+              <aside className="hidden xl:block w-[70px] flex-shrink-0 border-l border-border bg-background overflow-y-auto">
                 <RightPanel />
               </aside>
             </div>

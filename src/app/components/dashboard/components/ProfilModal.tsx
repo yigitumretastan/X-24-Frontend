@@ -3,8 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { deleteCookie } from "@/app/utils/cookies";
-import { useAuth } from "@/app/contexts/AuthContext";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 
 interface ProfileModalProps {
   onClose: () => void;
@@ -13,7 +12,6 @@ interface ProfileModalProps {
 
 export default function ProfileModal({ onClose, triggerRef }: ProfileModalProps) {
   const router = useRouter();
-  const { } = useAuth();
   const modalRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
 

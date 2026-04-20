@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { SettingsTabId, SettingsTab } from "@/app/types/settings";
-import { User, Palette, Shield, Bell, Database, Key } from "lucide-react";
+import { User, Palette, Shield, Bell, Database, Key, Mail } from "lucide-react";
 
 export function useSettings() {
   const [activeTab, setActiveTab] = useState<SettingsTabId>("profile");
@@ -41,6 +41,12 @@ export function useSettings() {
       label: "API", 
       icon: Key, 
       description: "API anahtarları ve entegrasyonlar" 
+    },
+    {
+      id: "mail",
+      label: "Mail Entegrasyonu",
+      icon: Mail,
+      description: "POP3/Mail ayarlarınızı yapılandırın"
     }
   ];
 

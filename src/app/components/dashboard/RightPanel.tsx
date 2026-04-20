@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Clock, Bug, Send } from "lucide-react";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 
 export default function RightPanel() {
   const { theme } = useTheme();
@@ -18,22 +18,22 @@ export default function RightPanel() {
         : 'bg-white/50 border-l border-gray-300/30'
     }`}>
       {/* Compact Icon Buttons */}
-      <div className="flex flex-col gap-3 w-full">
+      <div className="flex flex-col gap-3 w-full max-w-[54px]">
         
         {/* Time Tracker Button */}
         <button
           onClick={() => setShowTimeModal(true)}
-          className={`w-full aspect-square rounded-2xl p-3 transition-all duration-200 hover:scale-105 group relative ${
+          className={`w-full aspect-square rounded-xl p-2 transition-all duration-200 hover:scale-105 group relative flex items-center justify-center ${
             theme === 'dark'
               ? 'bg-blue-900/30 hover:bg-blue-900/50 border border-blue-700/50'
               : 'bg-blue-50 hover:bg-blue-100 border border-blue-200'
           }`}
           title="Zaman Takibi"
         >
-          <Clock className={`w-8 h-8 mx-auto ${
+          <Clock className={`w-6 h-6 ${
             theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
           }`} />
-          <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+          <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse border-2 border-background"></div>
         </button>
 
         {/* Message Users Avatars */}
@@ -43,17 +43,17 @@ export default function RightPanel() {
             onClick={() => {
               router.push('/messages?user=ahmet-kaya');
             }}
-            className={`w-full aspect-square rounded-2xl p-2 transition-all duration-200 hover:scale-105 group relative ${
+            className={`w-full aspect-square rounded-xl p-1 transition-all duration-200 hover:scale-105 group relative ${
               theme === 'dark'
                 ? 'bg-blue-900/30 hover:bg-blue-900/50 border border-blue-700/50'
                 : 'bg-blue-50 hover:bg-blue-100 border border-blue-200'
             }`}
             title="Ahmet Kaya"
           >
-            <div className="w-full h-full rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-              <span className="text-white text-lg font-bold">AK</span>
+            <div className="w-full h-full rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <span className="text-white text-[10px] font-bold">AK</span>
             </div>
-            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 border-2 border-background rounded-full"></div>
           </button>
 
           {/* Ayşe Kaya */}
@@ -61,17 +61,17 @@ export default function RightPanel() {
             onClick={() => {
               router.push('/messages?user=ayse-kaya');
             }}
-            className={`w-full aspect-square rounded-2xl p-2 transition-all duration-200 hover:scale-105 group relative ${
+            className={`w-full aspect-square rounded-xl p-1 transition-all duration-200 hover:scale-105 group relative ${
               theme === 'dark'
                 ? 'bg-pink-900/30 hover:bg-pink-900/50 border border-pink-700/50'
                 : 'bg-pink-50 hover:bg-pink-100 border border-pink-200'
             }`}
             title="Ayşe Kaya"
           >
-            <div className="w-full h-full rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
-              <span className="text-white text-lg font-bold">AY</span>
+            <div className="w-full h-full rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
+              <span className="text-white text-[10px] font-bold">AY</span>
             </div>
-            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-yellow-500 border-2 border-white rounded-full"></div>
+            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-yellow-500 border-2 border-background rounded-full"></div>
           </button>
 
           {/* Mehmet Demir */}
@@ -79,34 +79,34 @@ export default function RightPanel() {
             onClick={() => {
               router.push('/messages?user=mehmet-demir');
             }}
-            className={`w-full aspect-square rounded-2xl p-2 transition-all duration-200 hover:scale-105 group relative ${
+            className={`w-full aspect-square rounded-xl p-1 transition-all duration-200 hover:scale-105 group relative ${
               theme === 'dark'
                 ? 'bg-green-900/30 hover:bg-green-900/50 border border-green-700/50'
                 : 'bg-green-50 hover:bg-green-100 border border-green-200'
             }`}
             title="Mehmet Demir"
           >
-            <div className="w-full h-full rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-              <span className="text-white text-lg font-bold">MD</span>
+            <div className="w-full h-full rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+              <span className="text-white text-[10px] font-bold">MD</span>
             </div>
-            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-gray-400 border-2 border-white rounded-full"></div>
+            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-gray-400 border-2 border-background rounded-full"></div>
           </button>
         </div>
 
       </div>
 
       {/* Bug Report Button - Separate */}
-      <div className="mt-auto mb-3">
+      <div className="mt-auto mb-3 w-full max-w-[54px]">
         <button
           onClick={() => setShowBugModal(true)}
-          className={`w-full aspect-square rounded-2xl p-3 transition-all duration-200 hover:scale-105 group ${
+          className={`w-full aspect-square rounded-xl p-2 transition-all duration-200 hover:scale-105 group flex items-center justify-center ${
             theme === 'dark'
               ? 'bg-red-900/30 hover:bg-red-900/50 border border-red-700/50'
               : 'bg-red-50 hover:bg-red-100 border border-red-200'
           }`}
           title="Hata Bildir"
         >
-          <Bug className={`w-8 h-8 mx-auto ${
+          <Bug className={`w-6 h-6 ${
             theme === 'dark' ? 'text-red-400' : 'text-red-600'
           }`} />
         </button>

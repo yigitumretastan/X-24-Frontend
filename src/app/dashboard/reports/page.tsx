@@ -1,6 +1,6 @@
 "use client";
 
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 import { useReports } from "@/app/hooks/useReports";
 import { Edit3, History, User, Filter } from "lucide-react";
 

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Calendar, Plus } from "lucide-react";
 import SearchBar from "./SearchBar";
 import CreateTaskModal from "./CreateTaskModal";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 
 interface HeaderProps {
   searchTerm: string;

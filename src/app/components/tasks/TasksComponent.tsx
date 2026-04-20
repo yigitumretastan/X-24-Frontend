@@ -7,7 +7,7 @@ import TaskCard from "./TaskCard";
 import FilterTabs from "./FilterTabs";
 import SearchBar from "./SearchBar";
 import CreateTaskModal from "./CreateTaskModal";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 
 export default function TasksComponent() {
   const [isModalOpen, setModalOpen] = useState(false);

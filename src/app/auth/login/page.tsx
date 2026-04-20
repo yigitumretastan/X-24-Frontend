@@ -7,7 +7,7 @@ import { useFormValidation, authValidationRules } from "@/app/hooks/useFormValid
 import { apiClient } from "@/app/lib/api";
 import { LoginRequest, LoginResponse } from "@/app/types/auth";
 import { Eye, EyeOff, Mail, Lock, Sun, Moon } from "lucide-react";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 
 interface LoginFormData extends Record<string, unknown> {
 	identifier: string;

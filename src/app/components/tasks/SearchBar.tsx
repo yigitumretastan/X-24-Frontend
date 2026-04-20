@@ -1,6 +1,6 @@
 // components/SearchBar.tsx
 import { Search } from "lucide-react";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 
 interface SearchBarProps {
   searchTerm: string;
