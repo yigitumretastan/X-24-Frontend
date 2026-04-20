@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { ChevronRight, MessageSquare, Video, BarChart3, Clock, Calendar, CheckCircle } from "lucide-react";
 import { useAuth } from "@/app/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 interface FeatureCardProps {
   icon: React.ReactNode;
@@ -58,13 +59,17 @@ const BenefitItem: React.FC<BenefitItemProps> = ({
 
 const X24LandingPage: React.FC = () => {
   const [scrollY, setScrollY] = useState(0);
+  const router = useRouter();
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
+    // Otomatik olarak dashboard'a yönlendir
+    router.push("/dashboard");
+    
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [router]);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);

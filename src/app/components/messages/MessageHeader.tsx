@@ -1,7 +1,7 @@
 'use client';
 
 import { Phone, Video, MoreVertical, ArrowLeft, Forward, Download, Trash2, User, MessageSquare, BellOff, UserX, Eraser, Palette } from 'lucide-react';
-import { useTheme } from '@/app/hooks/useTheme';
+import { useTheme } from '@/app/contexts/ThemeContext';
 import { User as UserType } from '@/data/messages/users';
 
 interface MessageHeaderProps {

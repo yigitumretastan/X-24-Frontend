@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useDisk } from '@/app/hooks/useDisk';
-import { useTheme } from '@/app/hooks/useTheme';
+import { useTheme } from '@/app/contexts/ThemeContext';
 import { DiskFile } from '@/app/types/disk';
 import FileViewer from '@/app/components/common/FileViewer';
 

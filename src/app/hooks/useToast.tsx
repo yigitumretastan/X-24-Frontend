@@ -2,7 +2,7 @@
 
 import { useState, useCallback, createContext, useContext, ReactNode } from 'react';
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
-import { useTheme } from './useTheme';
+import { useTheme } from '../contexts/ThemeContext';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 

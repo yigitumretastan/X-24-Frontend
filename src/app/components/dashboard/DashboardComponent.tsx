@@ -1,7 +1,7 @@
 "use client";
 
 import { useDashboard } from "@/app/hooks/useDashboard";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 import TimeTracker from "./TimeTracker";
 import {
   BarChart3,

@@ -41,7 +41,7 @@ export default function LoginPage() {
 	// Redirect if already authenticated
 	useEffect(() => {
 		if (isAuthenticated) {
-			router.push("/workspaces");
+			router.push("/dashboard");
 		}
 	}, [isAuthenticated, router]);
 

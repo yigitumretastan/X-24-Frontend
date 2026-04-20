@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "./contexts/AuthContext";
 import { SignalRProvider } from "./contexts/SignalRContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import { ToastProvider } from "./hooks/useToast";
 
 const geistSans = Geist({
@@ -40,18 +41,20 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang= "en" >
-		<body
-        className={ `${geistSans.variable} ${geistMono.variable} antialiased` }
-      >
-		<AuthProvider>
-		<SignalRProvider>
-		<ToastProvider>
-		{ children }
-		</ToastProvider>
-		</SignalRProvider>
-		</AuthProvider>
-		</body>
+		<html lang="en">
+			<body
+				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+			>
+				<ThemeProvider>
+					<AuthProvider>
+						<SignalRProvider>
+							<ToastProvider>
+								{children}
+							</ToastProvider>
+						</SignalRProvider>
+					</AuthProvider>
+				</ThemeProvider>
+			</body>
 		</html>
-  );
+	);
 }

@@ -16,7 +16,7 @@ import {
   FileText,
 } from "lucide-react";
 import { useSidebar } from "../../dashboard/layout";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 
 export default function Sidebar() {
   const { theme } = useTheme();

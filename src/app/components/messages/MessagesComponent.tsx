@@ -1,6 +1,6 @@
 'use client';
 
-import { useTheme } from '@/app/hooks/useTheme';
+import { useTheme } from '@/app/contexts/ThemeContext';
 import { useMessages } from '@/app/hooks/useMessages';
 import ConversationList from './ConversationList';
 import MessageHeader from './MessageHeader';

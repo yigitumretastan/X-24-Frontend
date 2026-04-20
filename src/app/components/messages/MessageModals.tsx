@@ -1,6 +1,6 @@
 'use client';
 
-import { useTheme } from '@/app/hooks/useTheme';
+import { useTheme } from '@/app/contexts/ThemeContext';
 import { User } from '@/data/messages/users';
 import { users } from '@/data/messages/users';
 

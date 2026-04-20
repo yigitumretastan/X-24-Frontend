@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronDown, Reply, Edit, Trash2, Copy, Forward, Pin, Info, Heart, ThumbsUp, Laugh, Angry, Frown } from 'lucide-react';
-import { useTheme } from '@/app/hooks/useTheme';
+import { useTheme } from '@/app/contexts/ThemeContext';
 import { Conversation, Message } from '@/data/messages/conversations';
 
 interface MessageAreaProps {

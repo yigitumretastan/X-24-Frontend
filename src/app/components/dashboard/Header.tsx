@@ -5,7 +5,7 @@ import { Users, Bell, Search, Sun, Moon } from "lucide-react";
 import ProfilModal from "./components/ProfilModal";
 import InviteModal from "./components/InviteModal";
 import { getCookie } from "@/app/utils/cookies";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 
 export default function Header() {
 	const [modalOpen, setModalOpen] = useState(false);

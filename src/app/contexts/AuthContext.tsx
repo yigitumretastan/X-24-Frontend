@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { AuthState, User } from '@/app/types/auth';
-import { getCookie, setCookie, deleteCookie } from '@/app/utils/cookies';
+import { setCookie, deleteCookie } from '@/app/utils/cookies';
 
 // Auth Actions
 type AuthAction =
@@ -15,10 +15,17 @@ type AuthAction =
 
 // Initial state
 const initialState: AuthState = {
-  user: null,
-  token: null,
-  isLoading: true,
-  isAuthenticated: false,
+  user: {
+    id: '1',
+    name: 'X24',
+    lastName: 'Admin',
+    email: 'admin@x24.com',
+    role: 'admin',
+    avatar: ''
+  },
+  token: 'mock-token',
+  isLoading: false,
+  isAuthenticated: true,
 };
 
 // Auth reducer
@@ -76,26 +83,10 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Initialize auth state from cookies
+  // Initialize auth state - Disabled for automatic login
   useEffect(() => {
-    const initializeAuth = () => {
-      try {
-        const token = getCookie('userToken');
-        const userData = getCookie('userData');
-
-        if (token && userData) {
-          const user = JSON.parse(userData) as User;
-          dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
-        } else {
-          dispatch({ type: 'SET_LOADING', payload: false });
-        }
-      } catch (error) {
-        console.error('Auth initialization error:', error);
-        dispatch({ type: 'CLEAR_AUTH' });
-      }
-    };
-
-    initializeAuth();
+    // Already set in initialState
+    dispatch({ type: 'SET_LOADING', payload: false });
   }, []);
 
   // Login function

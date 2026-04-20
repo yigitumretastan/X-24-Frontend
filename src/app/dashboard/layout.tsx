@@ -5,7 +5,7 @@ import Header from "../components/dashboard/Header";
 import Sidebar from "../components/dashboard/Sidebar";
 import RightPanel from "../components/dashboard/RightPanel";
 import AuthGuard from "@/app/components/AuthGuard";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "@/app/contexts/ThemeContext";
 
 interface SidebarContextType {
   isCollapsed: boolean;
@@ -33,107 +33,38 @@ export default function DashboardLayout({
   return (
     <AuthGuard>
       <SidebarContext.Provider value={{ isCollapsed, setIsCollapsed }}>
-        <div className="dashboard-layout">
-          <style jsx>{`
-            .dashboard-layout {
-              display: grid;
-              grid-template-areas: 
-                "header header header"
-                "sidebar main rightpanel";
-              grid-template-columns: ${isCollapsed ? "80px" : "280px"} 1fr 100px;
-              grid-template-rows: auto 1fr;
-              min-height: 100vh;
-              background: ${theme === "dark" ? "#0f172a" : "#f8fafc"};
-              transition: grid-template-columns 0.3s ease, background 0.3s ease;
-            }
+        <div className="flex h-screen w-full overflow-hidden bg-background">
+          {/* Sidebar */}
+          <aside 
+            className={`flex-shrink-0 transition-all duration-300 ease-in-out z-30 border-r border-border ${
+              isCollapsed ? "w-[80px]" : "w-[280px]"
+            }`}
+          >
+            <Sidebar />
+          </aside>
 
-          .dashboard-header {
-            grid-area: header;
-            position: sticky;
-            top: 0;
-            z-index: 40;
-          }
+          {/* Main Area */}
+          <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+            {/* Header */}
+            <header className="h-[73px] flex-shrink-0 z-20 border-b border-border bg-background">
+              <Header />
+            </header>
 
-          .dashboard-sidebar {
-            grid-area: sidebar;
-            position: sticky;
-            top: 80px;
-            height: calc(100vh - 80px);
-            overflow: visible;
-          }
+            {/* Content Area */}
+            <div className="flex flex-1 overflow-hidden">
+              {/* Main Content */}
+              <main className="flex-1 overflow-y-auto p-6 bg-muted/30">
+                <div className="max-w-[1600px] mx-auto">
+                  {children}
+                </div>
+              </main>
 
-          .dashboard-main {
-            grid-area: main;
-            padding: 2rem;
-            overflow-y: auto;
-            background: ${theme === "dark" ? "#1e293b" : "white"};
-            margin: 1rem;
-            border-radius: 16px;
-            box-shadow: ${theme === "dark" 
-              ? "0 4px 12px rgba(0, 0, 0, 0.3)" 
-              : "0 4px 12px rgba(0, 0, 0, 0.05)"};
-            border: 1px solid ${theme === "dark" 
-              ? "rgba(148, 163, 184, 0.2)" 
-              : "rgba(148, 163, 184, 0.1)"};
-            color: ${theme === "dark" ? "#ffffff" : "#000000"};
-            transition: background 0.3s ease, border 0.3s ease, color 0.3s ease;
-          }
-
-          .dashboard-rightpanel {
-            grid-area: rightpanel;
-            position: sticky;
-            top: 80px;
-            height: calc(100vh - 80px);
-            overflow-y: auto;
-          }
-
-          @media (max-width: 1024px) {
-            .dashboard-layout {
-              grid-template-areas: 
-                "header header"
-                "sidebar main";
-              grid-template-columns: 280px 1fr;
-            }
-            
-            .dashboard-rightpanel {
-              display: none;
-            }
-          }
-
-          @media (max-width: 768px) {
-            .dashboard-layout {
-              grid-template-areas: 
-                "header"
-                "main";
-              grid-template-columns: 1fr;
-            }
-            
-            .dashboard-sidebar {
-              display: none;
-            }
-            
-            .dashboard-main {
-              margin: 0.5rem;
-              padding: 1rem;
-            }
-          }
-        `}</style>
-
-        <div className="dashboard-header">
-          <Header/>
-        </div>
-        
-        <div className="dashboard-sidebar">
-          <Sidebar />
-        </div>
-        
-        <main className="dashboard-main">
-          {children}
-        </main>
-        
-        <div className="dashboard-rightpanel">
-          <RightPanel />
-        </div>
+              {/* Right Panel */}
+              <aside className="hidden xl:block w-[320px] flex-shrink-0 border-l border-border bg-background overflow-y-auto">
+                <RightPanel />
+              </aside>
+            </div>
+          </div>
         </div>
       </SidebarContext.Provider>
     </AuthGuard>
