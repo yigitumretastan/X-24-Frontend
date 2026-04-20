@@ -7,14 +7,11 @@ import {
   FileText, 
   Trash2, 
   Archive, 
-  Star, 
   Search, 
   Plus, 
   MoreVertical,
   Reply,
   Forward,
-  Paperclip,
-  RefreshCw,
   Clock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -74,7 +71,7 @@ const mails: Mail[] = [
 ];
 
 export default function MailComponent() {
-  const { theme } = useTheme();
+  useTheme();
   const [selectedMailId, setSelectedMailId] = React.useState<string | null>(mails[0].id);
   const [mounted, setMounted] = React.useState(false);
   const [activeFolder, setActiveFolder] = React.useState("inbox");
