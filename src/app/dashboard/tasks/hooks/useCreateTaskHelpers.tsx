@@ -1,43 +1,59 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { usePostApiProjectsList } from "@/api/generated/projects/projects";
+import { useGetWorkspaceUsers } from "@/api/generated/workspace-users/workspace-users";
+import type {
+	LoadOptionsDto,
+	LoadResult,
+	ProjectDto,
+	WorkspaceUserDto,
+} from "@/api/model";
 
-export interface Option { value: string; label: string; }
-
-interface User {
-  id: string;
-  name: string;
+export interface Option {
+	value: string;
+	label: string;
 }
 
-interface Project {
-  id: string;
-  name: string;
-}
+export function useCreateTaskHelpers(workspaceId: number) {
+	const { data: usersResponse } = useGetWorkspaceUsers({
+		WorkspaceId: workspaceId.toString(),
+	});
+	const { mutate: fetchProjectsList, data: projectsResponse } =
+		usePostApiProjectsList();
+	const [projectOptions, setProjectOptions] = useState<Option[]>([]);
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+	const fetchProjects = useCallback(() => {
+		fetchProjectsList({
+			data: {
+				requireTotalCount: false,
+				skip: 0,
+				take: 100,
+			} as LoadOptionsDto,
+		});
+	}, [fetchProjectsList]);
 
-export function useCreateTaskHelpers() {
-  const [users, setUsers] = useState<Option[]>([]);
-  const [projects, setProjects] = useState<Option[]>([]);
+	useEffect(() => {
+		fetchProjects();
+	}, [fetchProjects]);
 
-  useEffect(() => {
-    async function fetchOptions() {
-      try {
-        const [uRes, pRes] = await Promise.all([
-          fetch(`${API_BASE}/users`),
-          fetch(`${API_BASE}/projects`),
-        ]);
-        if (!uRes.ok || !pRes.ok) throw new Error("Option fetch error");
+	useEffect(() => {
+		if (projectsResponse?.data) {
+			const loadResult = projectsResponse.data as LoadResult;
+			const mappedProjects = ((loadResult.data as ProjectDto[]) || []).map(
+				(p) => ({
+					value: p.id?.toString() || "",
+					label: p.name || "",
+				}),
+			);
+			setProjectOptions(mappedProjects);
+		}
+	}, [projectsResponse]);
 
-        const uData: User[] = await uRes.json();
-        const pData: Project[] = await pRes.json();
+	const users: Option[] = (
+		(usersResponse?.data as WorkspaceUserDto[]) || []
+	).map((u) => ({
+		value: u.id?.toString() || "",
+		label: u.email || "Bilinmeyen Kullanıcı",
+	}));
 
-        setUsers(uData.map(u => ({ value: u.id, label: u.name })));
-        setProjects(pData.map(p => ({ value: p.id, label: p.name })));
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    fetchOptions();
-  }, []);
-
-  return { users, projects };
+	return { users, projects: projectOptions };
 }

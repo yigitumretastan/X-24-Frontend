@@ -1,11 +1,7 @@
 export default function MessagesLayout({
-  children,
+	children,
 }: {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }) {
-  return (
-    <div className="h-full">
-      {children}
-    </div>
-  );
+	return <div className="h-full">{children}</div>;
 }

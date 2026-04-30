@@ -1,107 +1,125 @@
-import { useState, useEffect } from "react";
-import { Task, TaskType, TaskForm } from "@/app/types/calender";
-import { fetchTasks, fetchTaskTypes } from "@/app/lib/endpoints";
+import type { EventClickArg } from "@fullcalendar/core";
+import { useState } from "react";
+import {
+	useDeleteApiCalendarTasksId,
+	useGetCalendarTasks,
+	usePostApiCalendarTasksSaveorupdate,
+} from "@/api/generated/calendar-tasks/calendar-tasks";
+import type { CalendarTaskDto } from "@/api/model/calendarTaskDto";
+import type { Task, TaskForm, TaskType } from "@/app/types/calender";
 
 export function useCalendar() {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [taskTypes, setTaskTypes] = useState<TaskType[]>([]);
-  const [form, setForm] = useState<TaskForm>({
-    title: "",
-    description: "",
-    date: "",
-    time: "",
-    typeId: 0,
-    completed: false,
-  });
+	const [modalOpen, setModalOpen] = useState(false);
+	const [editingTask, setEditingTask] = useState<Task | null>(null);
+	const [form, setForm] = useState<TaskForm>({
+		title: "",
+		description: "",
+		date: "",
+		time: "09:00",
+		typeId: 1,
+		completed: false,
+	});
 
-  useEffect(() => {
-    async function loadData() {
-      const [fetchedTasks, fetchedTaskTypes] = await Promise.all([
-        fetchTasks(),
-        fetchTaskTypes(),
-      ]);
+	const { data: tasksResponse, refetch } = useGetCalendarTasks({});
+	const { mutateAsync: saveTask } = usePostApiCalendarTasksSaveorupdate();
+	const { mutateAsync: deleteTaskApi } = useDeleteApiCalendarTasksId();
 
-      setTasks(fetchedTasks);
-      setTaskTypes(fetchedTaskTypes);
+	const tasks: Task[] = (tasksResponse?.data || []).map(
+		(t: CalendarTaskDto) => ({
+			id: parseInt(t.id || "0", 10),
+			title: t.title || "",
+			description: t.description || "",
+			date: t.start ? new Date(t.start).toISOString().split("T")[0] : "",
+			time: t.start
+				? new Date(t.start).toLocaleTimeString([], {
+						hour: "2-digit",
+						minute: "2-digit",
+					})
+				: "09:00",
+			typeId: 1, // Default type
+			completed: false,
+		}),
+	);
 
-      if (fetchedTaskTypes.length > 0) {
-        setForm((f) => ({ ...f, typeId: fetchedTaskTypes[0].id }));
-      }
-    }
+	const taskTypes: TaskType[] = [
+		{ id: 1, name: "Genel", color: "#3b82f6" },
+		{ id: 2, name: "Toplantı", color: "#ef4444" },
+	];
 
-    loadData();
-  }, []);
+	function handleDateClick(info: { dateStr: string }) {
+		setEditingTask(null);
+		setForm({
+			title: "",
+			description: "",
+			date: info.dateStr,
+			time: "09:00",
+			typeId: taskTypes.length > 0 ? taskTypes[0].id : 0,
+			completed: false,
+		});
+		setModalOpen(true);
+	}
 
-  function handleDateClick(info: { dateStr: string }) {
-    setEditingTask(null);
-    setForm({
-      title: "",
-      description: "",
-      date: info.dateStr,
-      time: "09:00",
-      typeId: taskTypes.length > 0 ? taskTypes[0].id : 0,
-      completed: false,
-    });
-    setModalOpen(true);
-  }
+	function handleEventClick(clickInfo: EventClickArg) {
+		const taskId = Number(clickInfo.event.id);
+		const task = tasks.find((t) => t.id === taskId);
+		if (!task) return;
 
-  function handleEventClick(clickInfo: any) {
-    const taskId = Number(clickInfo.event.id);
-    const task = tasks.find((t) => t.id === taskId);
-    if (!task) return;
+		setEditingTask(task);
+		setForm({
+			title: task.title,
+			description: task.description,
+			date: task.date,
+			time: task.time,
+			typeId: task.typeId,
+			completed: task.completed || false,
+		});
+		setModalOpen(true);
+	}
 
-    setEditingTask(task);
-    setForm({
-      title: task.title,
-      description: task.description,
-      date: task.date,
-      time: task.time,
-      typeId: task.typeId,
-      completed: task.completed || false,
-    });
-    setModalOpen(true);
-  }
+	async function handleSubmit() {
+		try {
+			const payload: CalendarTaskDto = {
+				id: editingTask?.id.toString(),
+				title: form.title,
+				description: form.description,
+				start: `${form.date}T${form.time}:00Z`,
+				end: `${form.date}T${form.time}:00Z`,
+			};
 
-  function handleSubmit() {
-    if (editingTask) {
-      setTasks((prev) =>
-        prev.map((t) =>
-          t.id === editingTask.id ? { ...t, ...form, id: editingTask.id } : t
-        )
-      );
-    } else {
-      const newTask: Task = {
-        ...form,
-        id: tasks.length > 0 ? tasks[tasks.length - 1].id + 1 : 1,
-      };
-      setTasks((prev) => [...prev, newTask]);
-    }
-    setModalOpen(false);
-  }
+			await saveTask({ data: payload });
+			refetch();
+			setModalOpen(false);
+		} catch (err) {
+			console.error("Takvim görevi kaydedilirken hata:", err);
+		}
+	}
 
-  function deleteTask(id: number) {
-    setTasks((prev) => prev.filter((t) => t.id !== id));
-    setModalOpen(false);
-  }
+	async function deleteTask(id: number) {
+		try {
+			await deleteTaskApi({ id: id.toString() });
+			refetch();
+			setModalOpen(false);
+		} catch (err) {
+			console.error("Takvim görevi silinirken hata:", err);
+		}
+	}
 
-  const totalTasks = tasks.length;
-  const completedTasks = tasks.filter((t) => t.completed).length;
+	const totalTasks = tasks.length;
+	const completedTasks = tasks.filter((t) => t.completed).length;
 
-  return {
-    modalOpen,
-    setModalOpen,
-    editingTask,
-    tasks,
-    taskTypes,
-    form,
-    setForm,
-    handleDateClick,
-    handleEventClick,
-    handleSubmit,
-    deleteTask,
-    totalTasks,
-    completedTasks,
-  };
+	return {
+		modalOpen,
+		setModalOpen,
+		editingTask,
+		tasks,
+		taskTypes,
+		form,
+		setForm,
+		handleDateClick,
+		handleEventClick,
+		handleSubmit,
+		deleteTask,
+		totalTasks,
+		completedTasks,
+	};
 }

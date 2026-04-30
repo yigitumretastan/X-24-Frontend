@@ -1,262 +1,341 @@
 "use client";
 
-import React from "react";
-import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import FullCalendar from "@fullcalendar/react";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import {
+	Calendar,
+	CheckCircle,
+	Clock,
+	Plus,
+	TrendingUp,
+	Users,
+} from "lucide-react";
 import { useTheme } from "@/app/contexts/ThemeContext";
 import { useCalendar } from "@/app/hooks/useCalendar";
 import TaskModal from "./TaskModal";
-import { Calendar, Plus, Clock, CheckCircle, Users, TrendingUp } from "lucide-react";
 
 export default function CalendarComponent() {
-  const { theme } = useTheme();
-  const {
-    modalOpen,
-    setModalOpen,
-    editingTask,
-    tasks,
-    taskTypes,
-    form,
-    setForm,
-    handleDateClick,
-    handleEventClick,
-    handleSubmit,
-    deleteTask,
-    totalTasks,
-    completedTasks,
-  } = useCalendar();
+	const { theme } = useTheme();
+	const {
+		modalOpen,
+		setModalOpen,
+		editingTask,
+		tasks,
+		taskTypes,
+		form,
+		setForm,
+		handleDateClick,
+		handleEventClick,
+		handleSubmit,
+		deleteTask,
+		totalTasks,
+		completedTasks,
+	} = useCalendar();
 
-  const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+	const completionRate =
+		totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-  return (
-    <div className={`min-h-screen p-6 ${
-      theme === "dark" 
-        ? "bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900" 
-        : "bg-gradient-to-br from-indigo-50 via-white to-purple-50"
-    }`}>
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className={`backdrop-blur-sm rounded-3xl p-8 shadow-xl border ${
-            theme === "dark"
-              ? "bg-gray-800/80 border-gray-700/50"
-              : "bg-white/80 border-white/20"
-          }`}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className={`p-3 rounded-2xl ${
-                  theme === "dark" ? "bg-indigo-900/50" : "bg-indigo-100"
-                }`}>
-                  <Calendar className="w-8 h-8 text-indigo-600" />
-                </div>
-                <div>
-                  <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                    Takvim & Etkinlikler
-                  </h1>
-                  <p className={`text-lg ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
-                    Görevlerinizi planlayın ve takip edin
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => {
-                  setForm({
-                    title: "",
-                    description: "",
-                    date: new Date().toISOString().split('T')[0],
-                    time: "09:00",
-                    typeId: taskTypes[0]?.id || 1,
-                    completed: false,
-                  });
-                  setModalOpen(true);
-                }}
-                className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
-              >
-                <Plus className="w-5 h-5" />
-                <span>Yeni Görev</span>
-              </button>
-            </div>
-          </div>
-        </div>
+	return (
+		<div
+			className={`min-h-screen p-6 ${
+				theme === "dark"
+					? "bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900"
+					: "bg-gradient-to-br from-indigo-50 via-white to-purple-50"
+			}`}
+		>
+			<div className="max-w-7xl mx-auto">
+				{/* Header */}
+				<div className="mb-8">
+					<div
+						className={`backdrop-blur-sm rounded-3xl p-8 shadow-xl border ${
+							theme === "dark"
+								? "bg-gray-800/80 border-gray-700/50"
+								: "bg-white/80 border-white/20"
+						}`}
+					>
+						<div className="flex items-center justify-between">
+							<div className="flex items-center space-x-4">
+								<div
+									className={`p-3 rounded-2xl ${
+										theme === "dark" ? "bg-indigo-900/50" : "bg-indigo-100"
+									}`}
+								>
+									<Calendar className="w-8 h-8 text-indigo-600" />
+								</div>
+								<div>
+									<h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+										Takvim & Etkinlikler
+									</h1>
+									<p
+										className={`text-lg ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}
+									>
+										Görevlerinizi planlayın ve takip edin
+									</p>
+								</div>
+							</div>
+							<button
+								type="button"
+								onClick={() => {
+									setForm({
+										title: "",
+										description: "",
+										date: new Date().toISOString().split("T")[0],
+										time: "09:00",
+										typeId: taskTypes[0]?.id || 1,
+										completed: false,
+									});
+									setModalOpen(true);
+								}}
+								className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
+							>
+								<Plus className="w-5 h-5" />
+								<span>Yeni Görev</span>
+							</button>
+						</div>
+					</div>
+				</div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Calendar Area */}
-          <div className="lg:col-span-3">
-            <div className={`backdrop-blur-sm rounded-3xl p-6 shadow-xl border ${
-              theme === "dark"
-                ? "bg-gray-800/80 border-gray-700/50"
-                : "bg-white/80 border-white/20"
-            }`}>
-              <div className="calendar-container">
-                <FullCalendar
-                  plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                  initialView="dayGridMonth"
-                  headerToolbar={{
-                    left: "prev,next today",
-                    center: "title",
-                    right: "dayGridMonth,timeGridWeek,timeGridDay",
-                  }}
-                  events={tasks.map((task) => ({
-                    id: task.id.toString(),
-                    title: task.title,
-                    date: task.date,
-                    backgroundColor: taskTypes.find(t => t.id === task.typeId)?.color || "#6366f1",
-                    borderColor: taskTypes.find(t => t.id === task.typeId)?.color || "#6366f1",
-                    textColor: "#ffffff",
-                    classNames: task.completed ? ["completed-event"] : [],
-                  }))}
-                  height="600px"
-                  dateClick={handleDateClick}
-                  eventClick={handleEventClick}
-                  dayMaxEvents={3}
-                  moreLinkClick="popover"
-                  eventDisplay="block"
-                  displayEventTime={false}
-                  dayHeaderClassNames={theme === "dark" ? "dark-day-header" : ""}
-                  dayCellClassNames={theme === "dark" ? "dark-day-cell" : ""}
-                />
-              </div>
-            </div>
-          </div>
+				<div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+					{/* Calendar Area */}
+					<div className="lg:col-span-3">
+						<div
+							className={`backdrop-blur-sm rounded-3xl p-6 shadow-xl border ${
+								theme === "dark"
+									? "bg-gray-800/80 border-gray-700/50"
+									: "bg-white/80 border-white/20"
+							}`}
+						>
+							<div className="calendar-container">
+								<FullCalendar
+									plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+									initialView="dayGridMonth"
+									headerToolbar={{
+										left: "prev,next today",
+										center: "title",
+										right: "dayGridMonth,timeGridWeek,timeGridDay",
+									}}
+									events={tasks.map((task) => ({
+										id: task.id.toString(),
+										title: task.title,
+										date: task.date,
+										backgroundColor:
+											taskTypes.find((t) => t.id === task.typeId)?.color ||
+											"#6366f1",
+										borderColor:
+											taskTypes.find((t) => t.id === task.typeId)?.color ||
+											"#6366f1",
+										textColor: "#ffffff",
+										classNames: task.completed ? ["completed-event"] : [],
+									}))}
+									height="600px"
+									dateClick={handleDateClick}
+									eventClick={handleEventClick}
+									dayMaxEvents={3}
+									moreLinkClick="popover"
+									eventDisplay="block"
+									displayEventTime={false}
+									dayHeaderClassNames={
+										theme === "dark" ? "dark-day-header" : ""
+									}
+									dayCellClassNames={theme === "dark" ? "dark-day-cell" : ""}
+								/>
+							</div>
+						</div>
+					</div>
 
-          {/* Right Sidebar */}
-          <div className="space-y-6">
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 gap-4">
-              <div className={`backdrop-blur-sm rounded-2xl p-6 shadow-lg border ${
-                theme === "dark"
-                  ? "bg-gray-800/80 border-gray-700/50"
-                  : "bg-white/80 border-white/20"
-              }`}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className={`text-sm font-medium ${
-                      theme === "dark" ? "text-gray-400" : "text-gray-500"
-                    }`}>Toplam Görev</p>
-                    <p className={`text-3xl font-bold ${
-                      theme === "dark" ? "text-white" : "text-gray-900"
-                    }`}>{totalTasks}</p>
-                  </div>
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                    theme === "dark" ? "bg-blue-900/50" : "bg-blue-100"
-                  }`}>
-                    <Clock className="w-6 h-6 text-blue-600" />
-                  </div>
-                </div>
-              </div>
+					{/* Right Sidebar */}
+					<div className="space-y-6">
+						{/* Stats Cards */}
+						<div className="grid grid-cols-1 gap-4">
+							<div
+								className={`backdrop-blur-sm rounded-2xl p-6 shadow-lg border ${
+									theme === "dark"
+										? "bg-gray-800/80 border-gray-700/50"
+										: "bg-white/80 border-white/20"
+								}`}
+							>
+								<div className="flex items-center justify-between">
+									<div>
+										<p
+											className={`text-sm font-medium ${
+												theme === "dark" ? "text-gray-400" : "text-gray-500"
+											}`}
+										>
+											Toplam Görev
+										</p>
+										<p
+											className={`text-3xl font-bold ${
+												theme === "dark" ? "text-white" : "text-gray-900"
+											}`}
+										>
+											{totalTasks}
+										</p>
+									</div>
+									<div
+										className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+											theme === "dark" ? "bg-blue-900/50" : "bg-blue-100"
+										}`}
+									>
+										<Clock className="w-6 h-6 text-blue-600" />
+									</div>
+								</div>
+							</div>
 
-              <div className={`backdrop-blur-sm rounded-2xl p-6 shadow-lg border ${
-                theme === "dark"
-                  ? "bg-gray-800/80 border-gray-700/50"
-                  : "bg-white/80 border-white/20"
-              }`}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className={`text-sm font-medium ${
-                      theme === "dark" ? "text-gray-400" : "text-gray-500"
-                    }`}>Tamamlanan</p>
-                    <p className={`text-3xl font-bold ${
-                      theme === "dark" ? "text-white" : "text-gray-900"
-                    }`}>{completedTasks}</p>
-                    <p className="text-sm text-emerald-600 flex items-center mt-1">
-                      <TrendingUp className="w-4 h-4 mr-1" />
-                      %{completionRate} başarı
-                    </p>
-                  </div>
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                    theme === "dark" ? "bg-emerald-900/50" : "bg-emerald-100"
-                  }`}>
-                    <CheckCircle className="w-6 h-6 text-emerald-600" />
-                  </div>
-                </div>
-              </div>
-            </div>
+							<div
+								className={`backdrop-blur-sm rounded-2xl p-6 shadow-lg border ${
+									theme === "dark"
+										? "bg-gray-800/80 border-gray-700/50"
+										: "bg-white/80 border-white/20"
+								}`}
+							>
+								<div className="flex items-center justify-between">
+									<div>
+										<p
+											className={`text-sm font-medium ${
+												theme === "dark" ? "text-gray-400" : "text-gray-500"
+											}`}
+										>
+											Tamamlanan
+										</p>
+										<p
+											className={`text-3xl font-bold ${
+												theme === "dark" ? "text-white" : "text-gray-900"
+											}`}
+										>
+											{completedTasks}
+										</p>
+										<p className="text-sm text-emerald-600 flex items-center mt-1">
+											<TrendingUp className="w-4 h-4 mr-1" />%{completionRate}{" "}
+											başarı
+										</p>
+									</div>
+									<div
+										className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+											theme === "dark" ? "bg-emerald-900/50" : "bg-emerald-100"
+										}`}
+									>
+										<CheckCircle className="w-6 h-6 text-emerald-600" />
+									</div>
+								</div>
+							</div>
+						</div>
 
-            {/* Task Types */}
-            <div className={`backdrop-blur-sm rounded-2xl p-6 shadow-lg border ${
-              theme === "dark"
-                ? "bg-gray-800/80 border-gray-700/50"
-                : "bg-white/80 border-white/20"
-            }`}>
-              <h3 className={`text-lg font-semibold mb-4 flex items-center ${
-                theme === "dark" ? "text-white" : "text-gray-900"
-              }`}>
-                <Users className="w-5 h-5 mr-2" />
-                Görev Türleri
-              </h3>
-              <div className="space-y-3">
-                {taskTypes.map((type) => {
-                  const typeTaskCount = tasks.filter((t) => t.typeId === type.id).length;
-                  return (
-                    <div key={type.id} className={`flex items-center justify-between p-3 rounded-xl transition-colors ${
-                      theme === "dark" ? "hover:bg-gray-700/50" : "hover:bg-gray-50"
-                    }`}>
-                      <div className="flex items-center space-x-3">
-                        <div
-                          className="w-4 h-4 rounded-full shadow-sm"
-                          style={{ backgroundColor: type.color || "#6366f1" }}
-                        />
-                        <span className={`font-medium ${
-                          theme === "dark" ? "text-gray-200" : "text-gray-700"
-                        }`}>{type.name}</span>
-                      </div>
-                      <span className={`text-sm font-semibold px-2 py-1 rounded-full ${
-                        theme === "dark" 
-                          ? "bg-gray-700 text-gray-300" 
-                          : "bg-gray-100 text-gray-600"
-                      }`}>
-                        {typeTaskCount}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+						{/* Task Types */}
+						<div
+							className={`backdrop-blur-sm rounded-2xl p-6 shadow-lg border ${
+								theme === "dark"
+									? "bg-gray-800/80 border-gray-700/50"
+									: "bg-white/80 border-white/20"
+							}`}
+						>
+							<h3
+								className={`text-lg font-semibold mb-4 flex items-center ${
+									theme === "dark" ? "text-white" : "text-gray-900"
+								}`}
+							>
+								<Users className="w-5 h-5 mr-2" />
+								Görev Türleri
+							</h3>
+							<div className="space-y-3">
+								{taskTypes.map((type) => {
+									const typeTaskCount = tasks.filter(
+										(t) => t.typeId === type.id,
+									).length;
+									return (
+										<div
+											key={type.id}
+											className={`flex items-center justify-between p-3 rounded-xl transition-colors ${
+												theme === "dark"
+													? "hover:bg-gray-700/50"
+													: "hover:bg-gray-50"
+											}`}
+										>
+											<div className="flex items-center space-x-3">
+												<div
+													className="w-4 h-4 rounded-full shadow-sm"
+													style={{ backgroundColor: type.color || "#6366f1" }}
+												/>
+												<span
+													className={`font-medium ${
+														theme === "dark" ? "text-gray-200" : "text-gray-700"
+													}`}
+												>
+													{type.name}
+												</span>
+											</div>
+											<span
+												className={`text-sm font-semibold px-2 py-1 rounded-full ${
+													theme === "dark"
+														? "bg-gray-700 text-gray-300"
+														: "bg-gray-100 text-gray-600"
+												}`}
+											>
+												{typeTaskCount}
+											</span>
+										</div>
+									);
+								})}
+							</div>
+						</div>
 
-            {/* Progress Bar */}
-            <div className={`backdrop-blur-sm rounded-2xl p-6 shadow-lg border ${
-              theme === "dark"
-                ? "bg-gray-800/80 border-gray-700/50"
-                : "bg-white/80 border-white/20"
-            }`}>
-              <h3 className={`text-lg font-semibold mb-4 ${
-                theme === "dark" ? "text-white" : "text-gray-900"
-              }`}>İlerleme</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className={theme === "dark" ? "text-gray-300" : "text-gray-600"}>
-                    Tamamlanma Oranı
-                  </span>
-                  <span className="font-semibold text-indigo-600">%{completionRate}</span>
-                </div>
-                <div className={`w-full rounded-full h-3 ${
-                  theme === "dark" ? "bg-gray-700" : "bg-gray-200"
-                }`}>
-                  <div
-                    className="bg-gradient-to-r from-indigo-500 to-purple-600 h-3 rounded-full transition-all duration-500"
-                    style={{ width: `${completionRate}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+						{/* Progress Bar */}
+						<div
+							className={`backdrop-blur-sm rounded-2xl p-6 shadow-lg border ${
+								theme === "dark"
+									? "bg-gray-800/80 border-gray-700/50"
+									: "bg-white/80 border-white/20"
+							}`}
+						>
+							<h3
+								className={`text-lg font-semibold mb-4 ${
+									theme === "dark" ? "text-white" : "text-gray-900"
+								}`}
+							>
+								İlerleme
+							</h3>
+							<div className="space-y-2">
+								<div className="flex justify-between text-sm">
+									<span
+										className={
+											theme === "dark" ? "text-gray-300" : "text-gray-600"
+										}
+									>
+										Tamamlanma Oranı
+									</span>
+									<span className="font-semibold text-indigo-600">
+										%{completionRate}
+									</span>
+								</div>
+								<div
+									className={`w-full rounded-full h-3 ${
+										theme === "dark" ? "bg-gray-700" : "bg-gray-200"
+									}`}
+								>
+									<div
+										className="bg-gradient-to-r from-indigo-500 to-purple-600 h-3 rounded-full transition-all duration-500"
+										style={{ width: `${completionRate}%` }}
+									/>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
-      <TaskModal
-        show={modalOpen}
-        onClose={() => setModalOpen(false)}
-        taskTypes={taskTypes}
-        form={form}
-        setForm={setForm}
-        onSubmit={handleSubmit}
-        editingTask={editingTask}
-        deleteTask={deleteTask}
-      />
+			<TaskModal
+				show={modalOpen}
+				onClose={() => setModalOpen(false)}
+				taskTypes={taskTypes}
+				form={form}
+				setForm={setForm}
+				onSubmit={handleSubmit}
+				editingTask={editingTask}
+				deleteTask={deleteTask}
+			/>
 
-      <style jsx global>{`
+			<style jsx global>{`
         .calendar-container .fc {
           font-family: inherit;
         }
@@ -468,6 +547,6 @@ export default function CalendarComponent() {
           }
         }
       `}</style>
-    </div>
-  );
+		</div>
+	);
 }

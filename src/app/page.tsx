@@ -1,86 +1,92 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { ChevronRight, MessageSquare, Video, BarChart3, Clock, Calendar, CheckCircle } from "lucide-react";
-import { useAuth } from "@/app/contexts/AuthContext";
+import {
+	BarChart3,
+	Calendar,
+	CheckCircle,
+	ChevronRight,
+	Clock,
+	MessageSquare,
+	Video,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 interface FeatureCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  delay?: number;
+	icon: React.ReactNode;
+	title: string;
+	description: string;
+	delay?: number;
 }
 
 interface BenefitItemProps {
-  number: string;
-  title: string;
-  description: string;
+	number: string;
+	title: string;
+	description: string;
 }
 
 const FeatureCard: React.FC<FeatureCardProps> = ({
-  icon,
-  title,
-  description,
-  delay = 0,
+	icon,
+	title,
+	description,
+	delay = 0,
 }) => {
-  const [isVisible, setIsVisible] = useState(false);
+	const [isVisible, setIsVisible] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), delay);
-    return () => clearTimeout(timer);
-  }, [delay]);
+	useEffect(() => {
+		const timer = setTimeout(() => setIsVisible(true), delay);
+		return () => clearTimeout(timer);
+	}, [delay]);
 
-  return (
-    <div
-      className={`feature-card ${
-        isVisible ? "animate-fade-in-up" : "opacity-0"
-      }`}
-      style={{ animationDelay: `${delay}ms` }}
-    >
-      <div className="feature-icon">{icon}</div>
-      <h3>{title}</h3>
-      <p>{description}</p>
-    </div>
-  );
+	return (
+		<div
+			className={`feature-card ${
+				isVisible ? "animate-fade-in-up" : "opacity-0"
+			}`}
+			style={{ animationDelay: `${delay}ms` }}
+		>
+			<div className="feature-icon">{icon}</div>
+			<h3>{title}</h3>
+			<p>{description}</p>
+		</div>
+	);
 };
 
 const BenefitItem: React.FC<BenefitItemProps> = ({
-  number,
-  title,
-  description,
+	number,
+	title,
+	description,
 }) => (
-  <div className="benefit-item">
-    <div className="benefit-number">{number}</div>
-    <h3>{title}</h3>
-    <p>{description}</p>
-  </div>
+	<div className="benefit-item">
+		<div className="benefit-number">{number}</div>
+		<h3>{title}</h3>
+		<p>{description}</p>
+	</div>
 );
 
 const X24LandingPage: React.FC = () => {
-  const [scrollY, setScrollY] = useState(0);
-  const router = useRouter();
-  const { isAuthenticated } = useAuth();
+	const [scrollY, setScrollY] = useState(0);
+	const _router = useRouter();
+	const { isAuthenticated } = useAuth();
 
-  useEffect(() => {
-    // Otomatik olarak dashboard'a yönlendir
-    router.push("/dashboard");
-    
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [router]);
+	useEffect(() => {
+		const handleScroll = () => setScrollY(window.scrollY);
+		window.addEventListener("scroll", handleScroll);
+		return () => window.removeEventListener("scroll", handleScroll);
+	}, []);
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+	const scrollToSection = (sectionId: string) => {
+		const element = document.getElementById(sectionId);
+		if (element) {
+			element.scrollIntoView({ behavior: "smooth" });
+		}
+	};
 
-  return (
-    <div className="min-h-screen">
-      <style jsx>{`
+	return (
+		<div className="min-h-screen">
+			<style jsx>{`
         * {
           margin: 0;
           padding: 0;
@@ -101,9 +107,11 @@ const X24LandingPage: React.FC = () => {
         }
 
         .header {
-          background: ${scrollY > 100
-            ? "rgba(255, 255, 255, 0.98)"
-            : "rgba(255, 255, 255, 0.95)"};
+          background: ${
+						scrollY > 100
+							? "rgba(255, 255, 255, 0.98)"
+							: "rgba(255, 255, 255, 0.95)"
+					};
           backdrop-filter: blur(10px);
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
           position: fixed;
@@ -550,336 +558,361 @@ const X24LandingPage: React.FC = () => {
         }
       `}</style>
 
-      {/* Header */}
-      <header className="header">
-        <nav className="nav container">
-          <div className="logo" onClick={() => scrollToSection("hero")}>
-            X-24
-          </div>
-          <ul className="nav-links">
-            <li
-              className="nav-link"
-              onClick={() => scrollToSection("features")}
-            >
-              Özellikler
-            </li>
-            <li
-              className="nav-link"
-              onClick={() => scrollToSection("dashboard")}
-            >
-              Dashboard
-            </li>
-            <li className="nav-link" onClick={() => scrollToSection("pricing")}>
-              Fiyatlandırma
-            </li>
-            <li className="nav-link" onClick={() => scrollToSection("contact")}>
-              İletişim
-            </li>
-            <li>
-              <button
-                className="cta-btn"
-                onClick={() => {
-                  if (isAuthenticated) {
-                    window.location.href = "/workspaces";
-                  } else {
-                    window.location.href = "/auth/register";
-                  }
-                }}
-              >
-                {isAuthenticated ? "Workspace'e Git" : "Ücretsiz Başla"}
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </header>
+			{/* Header */}
+			<header className="header">
+				<nav className="nav container">
+					<button
+						type="button"
+						className="logo"
+						onClick={() => scrollToSection("hero")}
+					>
+						X-24
+					</button>
+					<ul className="nav-links">
+						<li>
+							<button
+								type="button"
+								className="nav-link"
+								onClick={() => scrollToSection("features")}
+							>
+								Özellikler
+							</button>
+						</li>
+						<li>
+							<button
+								type="button"
+								className="nav-link"
+								onClick={() => scrollToSection("dashboard")}
+							>
+								Dashboard
+							</button>
+						</li>
+						<li>
+							<button
+								type="button"
+								className="nav-link"
+								onClick={() => scrollToSection("pricing")}
+							>
+								Fiyatlandırma
+							</button>
+						</li>
+						<li>
+							<button
+								type="button"
+								className="nav-link"
+								onClick={() => scrollToSection("contact")}
+							>
+								İletişim
+							</button>
+						</li>
+						<li>
+							<button
+								type="button"
+								className="cta-btn"
+								onClick={() => {
+									if (isAuthenticated) {
+										window.location.href = "/workspaces";
+									} else {
+										window.location.href = "/auth/register";
+									}
+								}}
+							>
+								{isAuthenticated ? "Workspace'e Git" : "Ücretsiz Başla"}
+							</button>
+						</li>
+					</ul>
+				</nav>
+			</header>
 
-      {/* Hero Section */}
-      <section id="hero" className="hero">
-        <div className="container">
-          <h1>Proje ve Ekibinizi Verimli Şekilde Yönetin</h1>
-          <p>
-            X-24 ile ekip çalışmalarınızı organize edin, görevlerinizi takip
-            edin ve projelerinizi başarıyla tamamlayın. Tüm ihtiyaçlarınız tek
-            platformda!
-          </p>
-          <button 
-            className="cta-btn"
-            onClick={() => {
-              if (isAuthenticated) {
-                window.location.href = "/workspaces";
-              } else {
-                window.location.href = "/auth/register";
-              }
-            }}
-          >
-            {isAuthenticated ? "Workspace'e Git" : "Ücretsiz Başlayın"}
-            <ChevronRight className="inline ml-2" size={20} />
-          </button>
+			{/* Hero Section */}
+			<section id="hero" className="hero">
+				<div className="container">
+					<h1>Proje ve Ekibinizi Verimli Şekilde Yönetin</h1>
+					<p>
+						X-24 ile ekip çalışmalarınızı organize edin, görevlerinizi takip
+						edin ve projelerinizi başarıyla tamamlayın. Tüm ihtiyaçlarınız tek
+						platformda!
+					</p>
+					<button
+						type="button"
+						className="cta-btn"
+						onClick={() => {
+							if (isAuthenticated) {
+								window.location.href = "/workspaces";
+							} else {
+								window.location.href = "/auth/register";
+							}
+						}}
+					>
+						{isAuthenticated ? "Workspace'e Git" : "Ücretsiz Başlayın"}
+						<ChevronRight className="inline ml-2" size={20} />
+					</button>
 
-          <div className="hero-illustration">
-            <div className="dashboard-mockup">
-              <div className="mockup-header">
-                <div className="mockup-dot dot-red"></div>
-                <div className="mockup-dot dot-yellow"></div>
-                <div className="mockup-dot dot-green"></div>
-              </div>
-              <div className="mockup-content">
-                <div className="mockup-card">
-                  <div className="mockup-title">Aktif Projeler</div>
-                  <div className="mockup-item active"></div>
-                  <div className="mockup-item"></div>
-                  <div className="mockup-item active"></div>
-                  <div className="mockup-item"></div>
-                </div>
-                <div className="mockup-card">
-                  <div className="mockup-title">Ekip Mesajları</div>
-                  <div className="mockup-item"></div>
-                  <div className="mockup-item active"></div>
-                  <div className="mockup-item"></div>
-                  <div className="mockup-item active"></div>
-                </div>
-                <div className="mockup-card">
-                  <div className="mockup-title">Görev Durumu</div>
-                  <div className="mockup-item active"></div>
-                  <div className="mockup-item active"></div>
-                  <div className="mockup-item"></div>
-                  <div className="mockup-item active"></div>
-                </div>
-                <div className="mockup-card">
-                  <div className="mockup-title">Performans</div>
-                  <div className="mockup-item active"></div>
-                  <div className="mockup-item"></div>
-                  <div className="mockup-item active"></div>
-                  <div className="mockup-item active"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+					<div className="hero-illustration">
+						<div className="dashboard-mockup">
+							<div className="mockup-header">
+								<div className="mockup-dot dot-red"></div>
+								<div className="mockup-dot dot-yellow"></div>
+								<div className="mockup-dot dot-green"></div>
+							</div>
+							<div className="mockup-content">
+								<div className="mockup-card">
+									<div className="mockup-title">Aktif Projeler</div>
+									<div className="mockup-item active"></div>
+									<div className="mockup-item"></div>
+									<div className="mockup-item active"></div>
+									<div className="mockup-item"></div>
+								</div>
+								<div className="mockup-card">
+									<div className="mockup-title">Ekip Mesajları</div>
+									<div className="mockup-item"></div>
+									<div className="mockup-item active"></div>
+									<div className="mockup-item"></div>
+									<div className="mockup-item active"></div>
+								</div>
+								<div className="mockup-card">
+									<div className="mockup-title">Görev Durumu</div>
+									<div className="mockup-item active"></div>
+									<div className="mockup-item active"></div>
+									<div className="mockup-item"></div>
+									<div className="mockup-item active"></div>
+								</div>
+								<div className="mockup-card">
+									<div className="mockup-title">Performans</div>
+									<div className="mockup-item active"></div>
+									<div className="mockup-item"></div>
+									<div className="mockup-item active"></div>
+									<div className="mockup-item active"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
 
-      <div className="main-content">
-        {/* Features Section */}
-        <section id="features" className="section">
-          <div className="container">
-            <h2 className="section-title">Güçlü Özellikler</h2>
-            <p className="section-subtitle">
-              X-24&apos;ün sunduğu kapsamlı özelliklerle ekip çalışmalarınızı bir üst
-              seviyeye taşıyın
-            </p>
+			<div className="main-content">
+				{/* Features Section */}
+				<section id="features" className="section">
+					<div className="container">
+						<h2 className="section-title">Güçlü Özellikler</h2>
+						<p className="section-subtitle">
+							X-24&apos;ün sunduğu kapsamlı özelliklerle ekip çalışmalarınızı
+							bir üst seviyeye taşıyın
+						</p>
 
-            <div className="features-grid">
-              <FeatureCard
-                icon={<CheckCircle size={24} />}
-                title="Proje & Görev Yönetimi"
-                description="Projelerinizi organize edin, görevleri ekip üyelerine atayın ve ilerlemeyi gerçek zamanlı takip edin."
-                delay={100}
-              />
+						<div className="features-grid">
+							<FeatureCard
+								icon={<CheckCircle size={24} />}
+								title="Proje & Görev Yönetimi"
+								description="Projelerinizi organize edin, görevleri ekip üyelerine atayın ve ilerlemeyi gerçek zamanlı takip edin."
+								delay={100}
+							/>
 
-              <FeatureCard
-                icon={<MessageSquare size={24} />}
-                title="Gerçek Zamanlı Mesajlaşma"
-                description="Ekibinizle anlık mesajlaşma, grup sohbetleri ve dosya paylaşımı ile iletişimi güçlendirin."
-                delay={200}
-              />
+							<FeatureCard
+								icon={<MessageSquare size={24} />}
+								title="Gerçek Zamanlı Mesajlaşma"
+								description="Ekibinizle anlık mesajlaşma, grup sohbetleri ve dosya paylaşımı ile iletişimi güçlendirin."
+								delay={200}
+							/>
 
-              <FeatureCard
-                icon={<Video size={24} />}
-                title="Video Görüşmeler"
-                description="Sesli ve görüntülü aramalar ile uzaktan çalışan ekibinizle yüz yüze toplantılar yapın."
-                delay={300}
-              />
+							<FeatureCard
+								icon={<Video size={24} />}
+								title="Video Görüşmeler"
+								description="Sesli ve görüntülü aramalar ile uzaktan çalışan ekibinizle yüz yüze toplantılar yapın."
+								delay={300}
+							/>
 
-              <FeatureCard
-                icon={<BarChart3 size={24} />}
-                title="Performans Analizi"
-                description="Detaylı raporlar ve analizlerle ekip performansınızı ölçün ve gelişim alanlarını belirleyin."
-                delay={400}
-              />
+							<FeatureCard
+								icon={<BarChart3 size={24} />}
+								title="Performans Analizi"
+								description="Detaylı raporlar ve analizlerle ekip performansınızı ölçün ve gelişim alanlarını belirleyin."
+								delay={400}
+							/>
 
-              <FeatureCard
-                icon={<Clock size={24} />}
-                title="Çalışma Saati Takibi"
-                description="Günlük çalışma saatlerini kaydedin, zaman takibi yapın ve verimlilik raporları alın."
-                delay={500}
-              />
+							<FeatureCard
+								icon={<Clock size={24} />}
+								title="Çalışma Saati Takibi"
+								description="Günlük çalışma saatlerini kaydedin, zaman takibi yapın ve verimlilik raporları alın."
+								delay={500}
+							/>
 
-              <FeatureCard
-                icon={<Calendar size={24} />}
-                title="Takvim Entegrasyonu"
-                description="Görevlerinizi ve toplantılarınızı takvimde görüntüleyin, Google Takvim ile senkronize edin."
-                delay={600}
-              />
-            </div>
-          </div>
-        </section>
+							<FeatureCard
+								icon={<Calendar size={24} />}
+								title="Takvim Entegrasyonu"
+								description="Görevlerinizi ve toplantılarınızı takvimde görüntüleyin, Google Takvim ile senkronize edin."
+								delay={600}
+							/>
+						</div>
+					</div>
+				</section>
 
-        {/* Dashboard Preview */}
-        <section id="dashboard" className="section section-gray">
-          <div className="container">
-            <h2 className="section-title">Kullanıcı Dostu Dashboard</h2>
-            <p className="section-subtitle">
-              Tüm projelerinizi, görevlerinizi ve ekip aktivitelerini tek
-              ekrandan yönetin
-            </p>
+				{/* Dashboard Preview */}
+				<section id="dashboard" className="section section-gray">
+					<div className="container">
+						<h2 className="section-title">Kullanıcı Dostu Dashboard</h2>
+						<p className="section-subtitle">
+							Tüm projelerinizi, görevlerinizi ve ekip aktivitelerini tek
+							ekrandan yönetin
+						</p>
 
-            <div className="preview-container">
-              <div className="preview-image">
-                <span>
-                  🎯 Dashboard Önizlemesi - Projeler, Görevler ve Ekip Durumu
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
+						<div className="preview-container">
+							<div className="preview-image">
+								<span>
+									🎯 Dashboard Önizlemesi - Projeler, Görevler ve Ekip Durumu
+								</span>
+							</div>
+						</div>
+					</div>
+				</section>
 
-        {/* Benefits */}
-        <section className="section">
-          <div className="container">
-            <h2 className="section-title">
-              Neden Ekipler X-24&apos;ü Tercih Ediyor?
-            </h2>
-            <p className="section-subtitle">
-              Binlerce ekip zaten X-24 ile verimliliklerini artırdı
-            </p>
+				{/* Benefits */}
+				<section className="section">
+					<div className="container">
+						<h2 className="section-title">
+							Neden Ekipler X-24&apos;ü Tercih Ediyor?
+						</h2>
+						<p className="section-subtitle">
+							Binlerce ekip zaten X-24 ile verimliliklerini artırdı
+						</p>
 
-            <div className="benefits-grid">
-              <BenefitItem
-                number="85%"
-                title="Verimlilik Artışı"
-                description="Ekipler X-24 kullanarak ortalama %85 daha verimli çalışmaya başladı"
-              />
+						<div className="benefits-grid">
+							<BenefitItem
+								number="85%"
+								title="Verimlilik Artışı"
+								description="Ekipler X-24 kullanarak ortalama %85 daha verimli çalışmaya başladı"
+							/>
 
-              <BenefitItem
-                number="24/7"
-                title="Sürekli Erişim"
-                description="İstediğiniz her yerden, her zaman projelerinize erişim sağlayın"
-              />
+							<BenefitItem
+								number="24/7"
+								title="Sürekli Erişim"
+								description="İstediğiniz her yerden, her zaman projelerinize erişim sağlayın"
+							/>
 
-              <BenefitItem
-                number="99.9%"
-                title="Güvenilirlik"
-                description="%99.9 uptime garantisi ile kesintisiz hizmet deneyimi"
-              />
-            </div>
-          </div>
-        </section>
+							<BenefitItem
+								number="99.9%"
+								title="Güvenilirlik"
+								description="%99.9 uptime garantisi ile kesintisiz hizmet deneyimi"
+							/>
+						</div>
+					</div>
+				</section>
 
-        {/* Pricing */}
-        <section id="pricing" className="section section-gray">
-          <div className="container">
-            <h2 className="section-title">Basit ve Şeffaf Fiyatlandırma</h2>
-            <p className="section-subtitle">
-              Tüm özellikler dahil, gizli maliyet yok
-            </p>
+				{/* Pricing */}
+				<section id="pricing" className="section section-gray">
+					<div className="container">
+						<h2 className="section-title">Basit ve Şeffaf Fiyatlandırma</h2>
+						<p className="section-subtitle">
+							Tüm özellikler dahil, gizli maliyet yok
+						</p>
 
-            <div className="pricing-card">
-              <div className="price">Ücretsiz</div>
-              <div className="price-subtitle">Sınırsız kullanım</div>
+						<div className="pricing-card">
+							<div className="price">Ücretsiz</div>
+							<div className="price-subtitle">Sınırsız kullanım</div>
 
-              <ul className="features-list">
-                <li>Sınırsız proje ve görev</li>
-                <li>Ekip mesajlaşması</li>
-                <li>Video görüşmeler</li>
-                <li>Performans analizi</li>
-                <li>Çalışma saati takibi</li>
-                <li>Takvim entegrasyonu</li>
-                <li>24/7 destek</li>
-              </ul>
+							<ul className="features-list">
+								<li>Sınırsız proje ve görev</li>
+								<li>Ekip mesajlaşması</li>
+								<li>Video görüşmeler</li>
+								<li>Performans analizi</li>
+								<li>Çalışma saati takibi</li>
+								<li>Takvim entegrasyonu</li>
+								<li>24/7 destek</li>
+							</ul>
 
-              <button 
-                className="cta-btn"
-                onClick={() => {
-                  if (isAuthenticated) {
-                    window.location.href = "/workspaces";
-                  } else {
-                    window.location.href = "/auth/register";
-                  }
-                }}
-              >
-                {isAuthenticated ? "Workspace'e Git" : "Hemen Başlayın"}
-              </button>
-            </div>
-          </div>
-        </section>
-      </div>
+							<button
+								type="button"
+								className="cta-btn"
+								onClick={() => {
+									if (isAuthenticated) {
+										window.location.href = "/workspaces";
+									} else {
+										window.location.href = "/auth/register";
+									}
+								}}
+							>
+								{isAuthenticated ? "Workspace'e Git" : "Hemen Başlayın"}
+							</button>
+						</div>
+					</div>
+				</section>
+			</div>
 
-      {/* Footer */}
-      <footer className="footer">
-        <div className="container">
-          <div className="footer-content">
-            <div className="footer-section">
-              <h4>X-24</h4>
-              <p>
-                Ekip çalışmalarınızı bir üst seviyeye taşıyan modern proje
-                yönetim platformu.
-              </p>
-            </div>
+			{/* Footer */}
+			<footer className="footer">
+				<div className="container">
+					<div className="footer-content">
+						<div className="footer-section">
+							<h4>X-24</h4>
+							<p>
+								Ekip çalışmalarınızı bir üst seviyeye taşıyan modern proje
+								yönetim platformu.
+							</p>
+						</div>
 
-            <div className="footer-section">
-              <h4>Ürün</h4>
-              <ul>
-                <li>
-                  <span className="footer-link">Özellikler</span>
-                </li>
-                <li>
-                  <span className="footer-link">Fiyatlandırma</span>
-                </li>
-                <li>
-                  <span className="footer-link">API Dokümantasyonu</span>
-                </li>
-                <li>
-                  <span className="footer-link">Entegrasyonlar</span>
-                </li>
-              </ul>
-            </div>
+						<div className="footer-section">
+							<h4>Ürün</h4>
+							<ul>
+								<li>
+									<span className="footer-link">Özellikler</span>
+								</li>
+								<li>
+									<span className="footer-link">Fiyatlandırma</span>
+								</li>
+								<li>
+									<span className="footer-link">API Dokümantasyonu</span>
+								</li>
+								<li>
+									<span className="footer-link">Entegrasyonlar</span>
+								</li>
+							</ul>
+						</div>
 
-            <div className="footer-section">
-              <h4>Şirket</h4>
-              <ul>
-                <li>
-                  <span className="footer-link">Hakkımızda</span>
-                </li>
-                <li>
-                  <span className="footer-link">Blog</span>
-                </li>
-                <li>
-                  <span className="footer-link">Kariyer</span>
-                </li>
-                <li>
-                  <span className="footer-link">Basın Kiti</span>
-                </li>
-              </ul>
-            </div>
+						<div className="footer-section">
+							<h4>Şirket</h4>
+							<ul>
+								<li>
+									<span className="footer-link">Hakkımızda</span>
+								</li>
+								<li>
+									<span className="footer-link">Blog</span>
+								</li>
+								<li>
+									<span className="footer-link">Kariyer</span>
+								</li>
+								<li>
+									<span className="footer-link">Basın Kiti</span>
+								</li>
+							</ul>
+						</div>
 
-            <div className="footer-section">
-              <h4>Destek</h4>
-              <ul>
-                <li>
-                  <span className="footer-link">Yardım Merkezi</span>
-                </li>
-                <li>
-                  <span className="footer-link" id="contact">
-                    İletişim
-                  </span>
-                </li>
-                <li>
-                  <span className="footer-link">Gizlilik Politikası</span>
-                </li>
-                <li>
-                  <span className="footer-link">Kullanım Şartları</span>
-                </li>
-              </ul>
-            </div>
-          </div>
+						<div className="footer-section">
+							<h4>Destek</h4>
+							<ul>
+								<li>
+									<span className="footer-link">Yardım Merkezi</span>
+								</li>
+								<li>
+									<span className="footer-link" id="contact">
+										İletişim
+									</span>
+								</li>
+								<li>
+									<span className="footer-link">Gizlilik Politikası</span>
+								</li>
+								<li>
+									<span className="footer-link">Kullanım Şartları</span>
+								</li>
+							</ul>
+						</div>
+					</div>
 
-          <div className="footer-bottom">
-            <p>&copy; 2025 X-24. Tüm hakları saklıdır.</p>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
+					<div className="footer-bottom">
+						<p>&copy; 2025 X-24. Tüm hakları saklıdır.</p>
+					</div>
+				</div>
+			</footer>
+		</div>
+	);
 };
 
 export default X24LandingPage;

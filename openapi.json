@@ -1,0 +1,3552 @@
+{
+	"openapi": "3.1.1",
+	"info": {
+		"title": "CRM.Backend.Web | v1",
+		"version": "1.0.0"
+	},
+	"servers": [
+		{
+			"url": "https://localhost:7166/"
+		}
+	],
+	"paths": {
+		"/api/AI/ask": {
+			"post": {
+				"tags": ["AI"],
+				"summary": "Ask a question to AI",
+				"description": "Placeholder for AI assistant integration.",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AIRequest"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AIResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					}
+				}
+			}
+		},
+		"/api/Auth/google": {
+			"get": {
+				"tags": ["Auth"],
+				"summary": "Google login",
+				"description": "Starts Google authentication challenge.",
+				"parameters": [
+					{
+						"name": "returnUrl",
+						"in": "query",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/Auth/google-callback": {
+			"get": {
+				"tags": ["Auth"],
+				"summary": "Google login callback",
+				"description": "Handles Google authentication callback and signs user in using Identity cookie.",
+				"parameters": [
+					{
+						"name": "returnUrl",
+						"in": "query",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"400": {
+						"description": "Bad Request"
+					}
+				}
+			}
+		},
+		"/api/CalendarTasks": {
+			"get": {
+				"tags": ["CalendarTasks"],
+				"summary": "Get all Calendar Tasks",
+				"operationId": "GetCalendarTasks",
+				"parameters": [
+					{
+						"name": "ProjectId",
+						"in": "query",
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/CalendarTaskDto"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/CalendarTasks/saveorupdate": {
+			"post": {
+				"tags": ["CalendarTasks"],
+				"summary": "Create or Update a Calendar Task",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CalendarTaskDto"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/CalendarTasks/{id}": {
+			"delete": {
+				"tags": ["CalendarTasks"],
+				"summary": "Delete a Calendar Task",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Conversations": {
+			"get": {
+				"tags": ["Conversations"],
+				"summary": "Get all Conversations",
+				"operationId": "GetConversations",
+				"parameters": [
+					{
+						"name": "WorkspaceId",
+						"in": "query",
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/ConversationDto"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Conversations/saveorupdate": {
+			"post": {
+				"tags": ["Conversations"],
+				"summary": "Create or Update a Conversation",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ConversationDto"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Conversations/{id}": {
+			"delete": {
+				"tags": ["Conversations"],
+				"summary": "Delete a Conversation",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/ConversationUsers": {
+			"get": {
+				"tags": ["ConversationUsers"],
+				"summary": "Get all Conversation Users",
+				"operationId": "GetConversationUsers",
+				"parameters": [
+					{
+						"name": "ConversationId",
+						"in": "query",
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/ConversationUserDto"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/ConversationUsers/saveorupdate": {
+			"post": {
+				"tags": ["ConversationUsers"],
+				"summary": "Create or Update a Conversation User",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ConversationUserDto"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/ConversationUsers/{id}": {
+			"delete": {
+				"tags": ["ConversationUsers"],
+				"summary": "Delete a Conversation User",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/GroupMembers": {
+			"get": {
+				"tags": ["GroupMembers"],
+				"summary": "Get all Group Members",
+				"operationId": "GetGroupMembers",
+				"parameters": [
+					{
+						"name": "GroupId",
+						"in": "query",
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/GroupMemberDto"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/GroupMembers/saveorupdate": {
+			"post": {
+				"tags": ["GroupMembers"],
+				"summary": "Create or Update a Group Member",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/GroupMemberDto"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/GroupMembers/{id}": {
+			"delete": {
+				"tags": ["GroupMembers"],
+				"summary": "Delete a Group Member",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Groups": {
+			"get": {
+				"tags": ["Groups"],
+				"summary": "Get all Groups",
+				"operationId": "GetGroups",
+				"parameters": [
+					{
+						"name": "WorkspaceId",
+						"in": "query",
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/GroupDto"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Groups/saveorupdate": {
+			"post": {
+				"tags": ["Groups"],
+				"summary": "Create or Update a Group",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/GroupDto"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Groups/{id}": {
+			"delete": {
+				"tags": ["Groups"],
+				"summary": "Delete a Group",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Mails/send": {
+			"post": {
+				"tags": ["Mails"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SendMailCommand"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "boolean"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Mails/list": {
+			"post": {
+				"tags": ["Mails"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/GetMailsQuery"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/MailMessageDto"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Media/upload": {
+			"post": {
+				"tags": ["Media"],
+				"summary": "Upload a file",
+				"description": "Uploads a file, encrypts it, and stores it securely.",
+				"requestBody": {
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"required": ["file"],
+								"type": "object",
+								"properties": {
+									"file": {
+										"$ref": "#/components/schemas/IFormFile"
+									}
+								}
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/Media/{id}": {
+			"get": {
+				"tags": ["Media"],
+				"summary": "Stream an encrypted file",
+				"description": "Streams an encrypted file by decrypting it on the fly.",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"404": {
+						"description": "Not Found"
+					},
+					"400": {
+						"description": "Bad Request"
+					}
+				}
+			},
+			"delete": {
+				"tags": ["Media"],
+				"summary": "Move file to trash",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"400": {
+						"description": "Bad Request"
+					}
+				}
+			}
+		},
+		"/api/Media/trash/clear": {
+			"post": {
+				"tags": ["Media"],
+				"summary": "Clear own trash",
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/Messages": {
+			"get": {
+				"tags": ["Messages"],
+				"summary": "Get all Messages",
+				"operationId": "GetMessages",
+				"parameters": [
+					{
+						"name": "ConversationId",
+						"in": "query",
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/MessageDto"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Messages/saveorupdate": {
+			"post": {
+				"tags": ["Messages"],
+				"summary": "Create or Update a Message",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/MessageDto"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Messages/{id}": {
+			"delete": {
+				"tags": ["Messages"],
+				"summary": "Delete a Message",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Notifications": {
+			"get": {
+				"tags": ["Notifications"],
+				"summary": "Get all Notifications",
+				"operationId": "GetNotifications",
+				"parameters": [
+					{
+						"name": "UserId",
+						"in": "query",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/NotificationDto"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Notifications/saveorupdate": {
+			"post": {
+				"tags": ["Notifications"],
+				"summary": "Create or Update a Notification",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/NotificationDto"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Notifications/{id}": {
+			"delete": {
+				"tags": ["Notifications"],
+				"summary": "Delete a Notification",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Productivity/user/{id}": {
+			"get": {
+				"tags": ["Productivity"],
+				"summary": "Get detailed individual productivity report",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					},
+					{
+						"name": "start",
+						"in": "query",
+						"schema": {
+							"type": "string",
+							"format": "date-time"
+						}
+					},
+					{
+						"name": "end",
+						"in": "query",
+						"schema": {
+							"type": "string",
+							"format": "date-time"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductivityReportDto"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Productivity/team/{id}": {
+			"get": {
+				"tags": ["Productivity"],
+				"summary": "Get team productivity rollup for manager",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					},
+					{
+						"name": "start",
+						"in": "query",
+						"schema": {
+							"type": "string",
+							"format": "date-time"
+						}
+					},
+					{
+						"name": "end",
+						"in": "query",
+						"schema": {
+							"type": "string",
+							"format": "date-time"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductivityReportDto"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Projects/list": {
+			"post": {
+				"tags": ["Projects"],
+				"summary": "Get Projects with DevExtreme options",
+				"description": "Retrieves a list of projects using POST body for complex filtering.",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LoadOptionsDto"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LoadResult"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Projects/saveorupdate": {
+			"post": {
+				"tags": ["Projects"],
+				"summary": "Create or Update a Project",
+				"description": "If ID is provided, updates the project. Otherwise, creates a new one.",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ProjectDto"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Projects/{id}": {
+			"delete": {
+				"tags": ["Projects"],
+				"summary": "Delete a Project",
+				"description": "Soft deletes the project with the specified ID.",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Reports": {
+			"get": {
+				"tags": ["Reports"],
+				"summary": "Get all Reports",
+				"operationId": "GetReports",
+				"parameters": [
+					{
+						"name": "WorkspaceId",
+						"in": "query",
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/ReportDto"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Reports/saveorupdate": {
+			"post": {
+				"tags": ["Reports"],
+				"summary": "Create or Update a Report",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ReportDto"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Reports/{id}": {
+			"delete": {
+				"tags": ["Reports"],
+				"summary": "Delete a Report",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/ReportShares": {
+			"get": {
+				"tags": ["ReportShares"],
+				"summary": "Get all Report Shares",
+				"operationId": "GetReportShares",
+				"parameters": [
+					{
+						"name": "ReportId",
+						"in": "query",
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/ReportShareDto"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/ReportShares/saveorupdate": {
+			"post": {
+				"tags": ["ReportShares"],
+				"summary": "Create or Update a Report Share",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ReportShareDto"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/ReportShares/{id}": {
+			"delete": {
+				"tags": ["ReportShares"],
+				"summary": "Delete a Report Share",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/TaskCategories": {
+			"get": {
+				"tags": ["TaskCategories"],
+				"summary": "Get all Task Categories",
+				"operationId": "GetTaskCategories",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/TaskCategoryDto"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/TaskCategories/saveorupdate": {
+			"post": {
+				"tags": ["TaskCategories"],
+				"summary": "Create or Update a Task Category",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/TaskCategoryDto"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"pattern": "^-?(?:0|[1-9]\\d*)$",
+									"type": ["integer", "string"],
+									"format": "int32"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/TaskCategories/{id}": {
+			"delete": {
+				"tags": ["TaskCategories"],
+				"summary": "Delete a Task Category",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"pattern": "^-?(?:0|[1-9]\\d*)$",
+							"type": "integer",
+							"format": "int32"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/TimeTrackers": {
+			"get": {
+				"tags": ["TimeTrackers"],
+				"summary": "Get all Time Trackers",
+				"operationId": "GetTimeTrackers",
+				"parameters": [
+					{
+						"name": "UserId",
+						"in": "query",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/TimeTrackerDto"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/TimeTrackers/saveorupdate": {
+			"post": {
+				"tags": ["TimeTrackers"],
+				"summary": "Create or Update a Time Tracker",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/TimeTrackerDto"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/TimeTrackers/{id}": {
+			"delete": {
+				"tags": ["TimeTrackers"],
+				"summary": "Delete a Time Tracker",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Users/register": {
+			"post": {
+				"tags": ["Users"],
+				"summary": "Register",
+				"description": "Creates a new user account.",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RegisterRequest"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/problem+json": {
+								"schema": {
+									"$ref": "#/components/schemas/HttpValidationProblemDetails"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/Users/login": {
+			"post": {
+				"tags": ["Users"],
+				"summary": "Log in",
+				"description": "Authenticates a user. Use ?useCookies=true for cookie-based authentication.",
+				"parameters": [
+					{
+						"name": "useCookies",
+						"in": "query",
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"name": "useSessionCookies",
+						"in": "query",
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LoginRequest"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AccessTokenResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					}
+				}
+			}
+		},
+		"/api/Users/refresh": {
+			"post": {
+				"tags": ["Users"],
+				"summary": "Refresh token",
+				"description": "Returns a new access token using a valid refresh token.",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RefreshRequest"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AccessTokenResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					}
+				}
+			}
+		},
+		"/api/Users/confirmEmail": {
+			"get": {
+				"tags": ["Users"],
+				"summary": "Confirm email",
+				"description": "Confirms a user's email address using the token sent by email.",
+				"operationId": "MapIdentityApi-/api/Users/confirmEmail",
+				"parameters": [
+					{
+						"name": "userId",
+						"in": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "code",
+						"in": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "changedEmail",
+						"in": "query",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"400": {
+						"description": "Bad Request"
+					}
+				}
+			}
+		},
+		"/api/Users/resendConfirmationEmail": {
+			"post": {
+				"tags": ["Users"],
+				"summary": "Resend confirmation email",
+				"description": "Sends a new email confirmation link to the specified address.",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ResendConfirmationEmailRequest"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"400": {
+						"description": "Bad Request"
+					}
+				}
+			}
+		},
+		"/api/Users/forgotPassword": {
+			"post": {
+				"tags": ["Users"],
+				"summary": "Forgot password",
+				"description": "Sends a password reset link to the specified email address.",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ForgotPasswordRequest"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/problem+json": {
+								"schema": {
+									"$ref": "#/components/schemas/HttpValidationProblemDetails"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/Users/resetPassword": {
+			"post": {
+				"tags": ["Users"],
+				"summary": "Reset password",
+				"description": "Resets a user's password using the token sent by email.",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ResetPasswordRequest"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/problem+json": {
+								"schema": {
+									"$ref": "#/components/schemas/HttpValidationProblemDetails"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/Users/manage/2fa": {
+			"post": {
+				"tags": ["Users"],
+				"summary": "Manage two-factor authentication",
+				"description": "Enables, disables, or retrieves two-factor authentication settings.",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/TwoFactorRequest"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TwoFactorResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/problem+json": {
+								"schema": {
+									"$ref": "#/components/schemas/HttpValidationProblemDetails"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Users/manage/info": {
+			"get": {
+				"tags": ["Users"],
+				"summary": "Get account info",
+				"description": "Returns the current user's email and two-factor authentication status.",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/InfoResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/problem+json": {
+								"schema": {
+									"$ref": "#/components/schemas/HttpValidationProblemDetails"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			},
+			"post": {
+				"tags": ["Users"],
+				"summary": "Update account info",
+				"description": "Updates the current user's email or password.",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/InfoRequest"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/InfoResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/problem+json": {
+								"schema": {
+									"$ref": "#/components/schemas/HttpValidationProblemDetails"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Users/logout": {
+			"post": {
+				"tags": ["Users"],
+				"summary": "Log out",
+				"description": "Logs out the current user by clearing the authentication cookie.",
+				"operationId": "Logout",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Workspaces": {
+			"get": {
+				"tags": ["Workspaces"],
+				"summary": "Get all Workspaces",
+				"description": "Retrieves a list of all active workspaces.",
+				"operationId": "GetWorkspaces",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/WorkspaceDto"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Workspaces/saveorupdate": {
+			"post": {
+				"tags": ["Workspaces"],
+				"summary": "Create or Update a Workspace",
+				"description": "If ID is provided, updates the workspace. Otherwise, creates a new one.",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/WorkspaceDto"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/Workspaces/{id}": {
+			"delete": {
+				"tags": ["Workspaces"],
+				"summary": "Delete a Workspace",
+				"description": "Soft deletes the workspace with the specified ID.",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/WorkspaceTasks/list": {
+			"post": {
+				"tags": ["WorkspaceTasks"],
+				"summary": "Get Workspace Tasks with DevExtreme options",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LoadOptionsDto"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LoadResult"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/WorkspaceTasks/saveorupdate": {
+			"post": {
+				"tags": ["WorkspaceTasks"],
+				"summary": "Create or Update a Workspace Task",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/WorkspaceTaskDto"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/WorkspaceTasks/{id}": {
+			"delete": {
+				"tags": ["WorkspaceTasks"],
+				"summary": "Delete a Workspace Task",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/WorkspaceUsers": {
+			"get": {
+				"tags": ["WorkspaceUsers"],
+				"summary": "Get all Workspace Users",
+				"operationId": "GetWorkspaceUsers",
+				"parameters": [
+					{
+						"name": "WorkspaceId",
+						"in": "query",
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/WorkspaceUserDto"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/WorkspaceUsers/saveorupdate": {
+			"post": {
+				"tags": ["WorkspaceUsers"],
+				"summary": "Create or Update a Workspace User",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/WorkspaceUserDto"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"format": "uuid"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/api/WorkspaceUsers/{id}": {
+			"delete": {
+				"tags": ["WorkspaceUsers"],
+				"summary": "Delete a Workspace User",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"AccessTokenResponse": {
+				"required": ["accessToken", "expiresIn", "refreshToken"],
+				"type": "object",
+				"properties": {
+					"tokenType": {
+						"type": ["null", "string"]
+					},
+					"accessToken": {
+						"type": "string"
+					},
+					"expiresIn": {
+						"pattern": "^-?(?:0|[1-9]\\d*)$",
+						"type": ["integer", "string"],
+						"format": "int64"
+					},
+					"refreshToken": {
+						"type": "string"
+					}
+				}
+			},
+			"AIRequest": {
+				"type": "object",
+				"properties": {
+					"question": {
+						"type": "string"
+					}
+				}
+			},
+			"AIResponse": {
+				"type": "object",
+				"properties": {
+					"answer": {
+						"type": "string"
+					},
+					"confidence": {
+						"pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+						"type": ["number", "string"],
+						"format": "double"
+					}
+				}
+			},
+			"CalendarTaskDto": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"title": {
+						"type": "string"
+					},
+					"description": {
+						"type": ["null", "string"]
+					},
+					"start": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"end": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"allDay": {
+						"type": "boolean"
+					},
+					"color": {
+						"type": ["null", "string"]
+					},
+					"backgroundColor": {
+						"type": ["null", "string"]
+					},
+					"borderColor": {
+						"type": ["null", "string"]
+					},
+					"textColor": {
+						"type": ["null", "string"]
+					},
+					"priority": {
+						"$ref": "#/components/schemas/PriorityLevel"
+					},
+					"status": {
+						"$ref": "#/components/schemas/WorkSpaceTaskStatus"
+					},
+					"assignedToId": {
+						"type": ["null", "string"]
+					},
+					"projectId": {
+						"type": ["null", "string"],
+						"format": "uuid"
+					}
+				}
+			},
+			"ConversationDto": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"name": {
+						"type": ["null", "string"]
+					},
+					"isGroup": {
+						"type": "boolean"
+					},
+					"workspaceId": {
+						"type": "string",
+						"format": "uuid"
+					}
+				}
+			},
+			"ConversationUserDto": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"conversationId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"userId": {
+						"type": ["null", "string"]
+					}
+				}
+			},
+			"DateFormatOption": {
+				"type": "integer"
+			},
+			"ForgotPasswordRequest": {
+				"required": ["email"],
+				"type": "object",
+				"properties": {
+					"email": {
+						"type": "string"
+					}
+				}
+			},
+			"GetMailsQuery": {
+				"type": "object",
+				"properties": {
+					"host": {
+						"type": "string"
+					},
+					"port": {
+						"pattern": "^-?(?:0|[1-9]\\d*)$",
+						"type": ["integer", "string"],
+						"format": "int32"
+					},
+					"user": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"useSsl": {
+						"type": "boolean"
+					},
+					"count": {
+						"pattern": "^-?(?:0|[1-9]\\d*)$",
+						"type": ["integer", "string"],
+						"format": "int32"
+					}
+				}
+			},
+			"GroupDto": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"name": {
+						"type": "string"
+					},
+					"workspaceId": {
+						"type": "string",
+						"format": "uuid"
+					}
+				}
+			},
+			"GroupingInfo": {
+				"type": "object",
+				"properties": {
+					"groupInterval": {},
+					"isExpanded": {
+						"type": ["null", "boolean"]
+					},
+					"selector": {
+						"type": ["null", "string"]
+					},
+					"desc": {
+						"type": "boolean"
+					}
+				}
+			},
+			"GroupMemberDto": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"groupId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"workspaceUserId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"addedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"isActive": {
+						"type": "boolean"
+					}
+				}
+			},
+			"HttpValidationProblemDetails": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": ["null", "string"]
+					},
+					"title": {
+						"type": ["null", "string"]
+					},
+					"status": {
+						"pattern": "^-?(?:0|[1-9]\\d*)$",
+						"type": ["null", "integer", "string"],
+						"format": "int32"
+					},
+					"detail": {
+						"type": ["null", "string"]
+					},
+					"instance": {
+						"type": ["null", "string"]
+					},
+					"errors": {
+						"type": "object",
+						"additionalProperties": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					}
+				}
+			},
+			"IFormFile": {
+				"type": "string",
+				"format": "binary"
+			},
+			"InfoRequest": {
+				"type": "object",
+				"properties": {
+					"newEmail": {
+						"type": ["null", "string"]
+					},
+					"newPassword": {
+						"type": ["null", "string"]
+					},
+					"oldPassword": {
+						"type": ["null", "string"]
+					}
+				}
+			},
+			"InfoResponse": {
+				"required": ["email", "isEmailConfirmed"],
+				"type": "object",
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"isEmailConfirmed": {
+						"type": "boolean"
+					}
+				}
+			},
+			"InvitationStatus": {
+				"type": "integer"
+			},
+			"LanguageOption": {
+				"type": "integer"
+			},
+			"LoadOptionsDto": {
+				"type": "object",
+				"properties": {
+					"requireTotalCount": {
+						"type": "boolean"
+					},
+					"requireGroupCount": {
+						"type": "boolean"
+					},
+					"isCountQuery": {
+						"type": "boolean"
+					},
+					"isSummaryQuery": {
+						"type": "boolean"
+					},
+					"skip": {
+						"pattern": "^-?(?:0|[1-9]\\d*)$",
+						"type": ["integer", "string"],
+						"format": "int32"
+					},
+					"take": {
+						"pattern": "^-?(?:0|[1-9]\\d*)$",
+						"type": ["integer", "string"],
+						"format": "int32"
+					},
+					"sort": {
+						"type": ["null", "array"],
+						"items": {
+							"$ref": "#/components/schemas/SortingInfo"
+						}
+					},
+					"group": {
+						"type": ["null", "array"],
+						"items": {
+							"$ref": "#/components/schemas/GroupingInfo"
+						}
+					},
+					"filter": {
+						"type": ["null", "array"]
+					},
+					"totalSummary": {
+						"type": ["null", "array"],
+						"items": {
+							"$ref": "#/components/schemas/SummaryInfo"
+						}
+					},
+					"groupSummary": {
+						"type": ["null", "array"],
+						"items": {
+							"$ref": "#/components/schemas/SummaryInfo"
+						}
+					},
+					"select": {
+						"type": ["null", "array"],
+						"items": {
+							"type": "string"
+						}
+					},
+					"preSelect": {
+						"type": ["null", "array"],
+						"items": {
+							"type": "string"
+						}
+					},
+					"remoteSelect": {
+						"type": ["null", "boolean"]
+					},
+					"remoteGrouping": {
+						"type": ["null", "boolean"]
+					},
+					"expandLinqSumType": {
+						"type": ["null", "boolean"]
+					},
+					"primaryKey": {
+						"type": ["null", "array"],
+						"items": {
+							"type": "string"
+						}
+					},
+					"defaultSort": {
+						"type": ["null", "string"]
+					},
+					"stringToLower": {
+						"type": ["null", "boolean"]
+					},
+					"paginateViaPrimaryKey": {
+						"type": ["null", "boolean"]
+					},
+					"sortByPrimaryKey": {
+						"type": ["null", "boolean"]
+					},
+					"allowAsyncOverSync": {
+						"type": "boolean"
+					}
+				}
+			},
+			"LoadResult": {
+				"type": "object",
+				"properties": {
+					"data": {
+						"type": ["null", "array"]
+					},
+					"totalCount": {
+						"pattern": "^-?(?:0|[1-9]\\d*)$",
+						"type": ["integer", "string"],
+						"format": "int32",
+						"default": -1
+					},
+					"groupCount": {
+						"pattern": "^-?(?:0|[1-9]\\d*)$",
+						"type": ["integer", "string"],
+						"format": "int32",
+						"default": -1
+					},
+					"summary": {
+						"type": ["null", "array"]
+					}
+				}
+			},
+			"LoginRequest": {
+				"required": ["email", "password"],
+				"type": "object",
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"twoFactorCode": {
+						"type": ["null", "string"]
+					},
+					"twoFactorRecoveryCode": {
+						"type": ["null", "string"]
+					}
+				}
+			},
+			"MailMessageDto": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": ["null", "string"]
+					},
+					"subject": {
+						"type": ["null", "string"]
+					},
+					"from": {
+						"type": ["null", "string"]
+					},
+					"date": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"body": {
+						"type": ["null", "string"]
+					}
+				}
+			},
+			"MessageDto": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"conversationId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"content": {
+						"type": "string"
+					},
+					"sentAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"mediaUrl": {
+						"type": ["null", "string"]
+					},
+					"mediaType": {
+						"type": ["null", "string"]
+					},
+					"senderId": {
+						"type": "string"
+					},
+					"workspaceId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"repliedMessageId": {
+						"type": ["null", "string"],
+						"format": "uuid"
+					}
+				}
+			},
+			"MetricBreakdown": {
+				"type": "object",
+				"properties": {
+					"tasksCompleted": {
+						"pattern": "^-?(?:0|[1-9]\\d*)$",
+						"type": ["integer", "string"],
+						"format": "int32"
+					},
+					"projectsActive": {
+						"pattern": "^-?(?:0|[1-9]\\d*)$",
+						"type": ["integer", "string"],
+						"format": "int32"
+					},
+					"hoursWorked": {
+						"pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+						"type": ["number", "string"],
+						"format": "double"
+					},
+					"score": {
+						"pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+						"type": ["number", "string"],
+						"format": "double"
+					}
+				}
+			},
+			"NotificationDto": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"title": {
+						"type": "string"
+					},
+					"message": {
+						"type": "string"
+					},
+					"type": {
+						"$ref": "#/components/schemas/NotificationType"
+					},
+					"isRead": {
+						"type": "boolean"
+					},
+					"actionUrl": {
+						"type": ["null", "string"]
+					},
+					"icon": {
+						"type": ["null", "string"]
+					},
+					"userId": {
+						"type": "string"
+					},
+					"relatedEntityId": {
+						"type": ["null", "string"],
+						"format": "uuid"
+					},
+					"relatedEntityType": {
+						"type": ["null", "string"]
+					},
+					"readAt": {
+						"type": ["null", "string"],
+						"format": "date-time"
+					}
+				}
+			},
+			"NotificationType": {
+				"type": "integer"
+			},
+			"PriorityLevel": {
+				"type": "integer"
+			},
+			"ProductivityReportDto": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"efficiencyScore": {
+						"pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+						"type": ["number", "string"],
+						"format": "double"
+					},
+					"current": {
+						"$ref": "#/components/schemas/MetricBreakdown"
+					},
+					"previousPeriod": {
+						"$ref": "#/components/schemas/MetricBreakdown"
+					},
+					"previousYear": {
+						"$ref": "#/components/schemas/MetricBreakdown"
+					},
+					"subordinates": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/SubordinateProductivityDto"
+						}
+					}
+				}
+			},
+			"ProjectDto": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"name": {
+						"type": ["null", "string"]
+					},
+					"imgUrl": {
+						"type": ["null", "string"]
+					},
+					"logoUrl": {
+						"type": ["null", "string"]
+					},
+					"description": {
+						"type": ["null", "string"]
+					},
+					"fileName": {
+						"type": ["null", "string"]
+					},
+					"fileType": {
+						"type": ["null", "string"]
+					},
+					"fileUrl": {
+						"type": ["null", "string"]
+					},
+					"workspaceId": {
+						"type": "string",
+						"format": "uuid"
+					}
+				}
+			},
+			"RefreshRequest": {
+				"required": ["refreshToken"],
+				"type": "object",
+				"properties": {
+					"refreshToken": {
+						"type": "string"
+					}
+				}
+			},
+			"RegisterRequest": {
+				"required": ["email", "password"],
+				"type": "object",
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				}
+			},
+			"ReportDto": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": ["null", "string"]
+					},
+					"type": {
+						"$ref": "#/components/schemas/ReportType"
+					},
+					"configuration": {
+						"type": "string"
+					},
+					"filePath": {
+						"type": ["null", "string"]
+					},
+					"status": {
+						"$ref": "#/components/schemas/ReportStatus"
+					},
+					"generatedAt": {
+						"type": ["null", "string"],
+						"format": "date-time"
+					},
+					"isScheduled": {
+						"type": "boolean"
+					},
+					"scheduleCron": {
+						"type": ["null", "string"]
+					},
+					"nextRunAt": {
+						"type": ["null", "string"],
+						"format": "date-time"
+					},
+					"workspaceId": {
+						"type": ["null", "string"],
+						"format": "uuid"
+					}
+				}
+			},
+			"ReportShareDto": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"shareToken": {
+						"type": "string"
+					},
+					"isPublic": {
+						"type": "boolean"
+					},
+					"expiresAt": {
+						"type": ["null", "string"],
+						"format": "date-time"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"reportId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"sharedById": {
+						"type": "string"
+					},
+					"sharedWithId": {
+						"type": ["null", "string"]
+					}
+				}
+			},
+			"ReportStatus": {
+				"type": "integer"
+			},
+			"ReportType": {
+				"type": "integer"
+			},
+			"ResendConfirmationEmailRequest": {
+				"required": ["email"],
+				"type": "object",
+				"properties": {
+					"email": {
+						"type": "string"
+					}
+				}
+			},
+			"ResetPasswordRequest": {
+				"required": ["email", "resetCode", "newPassword"],
+				"type": "object",
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"resetCode": {
+						"type": "string"
+					},
+					"newPassword": {
+						"type": "string"
+					}
+				}
+			},
+			"SendMailCommand": {
+				"type": "object",
+				"properties": {
+					"host": {
+						"type": "string"
+					},
+					"port": {
+						"pattern": "^-?(?:0|[1-9]\\d*)$",
+						"type": ["integer", "string"],
+						"format": "int32"
+					},
+					"user": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"useSsl": {
+						"type": "boolean"
+					},
+					"to": {
+						"type": "string"
+					},
+					"subject": {
+						"type": "string"
+					},
+					"body": {
+						"type": "string"
+					}
+				}
+			},
+			"SortingInfo": {
+				"type": "object",
+				"properties": {
+					"selector": {
+						"type": ["null", "string"]
+					},
+					"desc": {
+						"type": "boolean"
+					}
+				}
+			},
+			"SubordinateProductivityDto": {
+				"type": "object",
+				"properties": {
+					"workspaceUserId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"name": {
+						"type": "string"
+					},
+					"efficiencyScore": {
+						"pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+						"type": ["number", "string"],
+						"format": "double"
+					}
+				}
+			},
+			"SummaryInfo": {
+				"type": "object",
+				"properties": {
+					"selector": {
+						"type": ["null", "string"]
+					},
+					"summaryType": {
+						"type": ["null", "string"]
+					}
+				}
+			},
+			"TaskCategoryDto": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"pattern": "^-?(?:0|[1-9]\\d*)$",
+						"type": ["integer", "string"],
+						"format": "int32"
+					},
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": ["null", "string"]
+					},
+					"color": {
+						"type": "string"
+					},
+					"icon": {
+						"type": ["null", "string"]
+					},
+					"isActive": {
+						"type": "boolean"
+					}
+				}
+			},
+			"ThemeOption": {
+				"type": "integer"
+			},
+			"TimeFormatOption": {
+				"type": "integer"
+			},
+			"TimeTrackerDto": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"userId": {
+						"type": "string"
+					},
+					"workspaceId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"startedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"endedAt": {
+						"type": ["null", "string"],
+						"format": "date-time"
+					},
+					"trackedDuration": {
+						"pattern": "^-?(\\d+\\.)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,7})?$",
+						"type": "string"
+					},
+					"isPaused": {
+						"type": "boolean"
+					},
+					"lastPausedAt": {
+						"type": ["null", "string"],
+						"format": "date-time"
+					},
+					"subject": {
+						"type": "string"
+					},
+					"description": {
+						"type": ["null", "string"]
+					}
+				}
+			},
+			"TimezoneOption": {
+				"type": "integer"
+			},
+			"TwoFactorRequest": {
+				"type": "object",
+				"properties": {
+					"enable": {
+						"type": ["null", "boolean"]
+					},
+					"twoFactorCode": {
+						"type": ["null", "string"]
+					},
+					"resetSharedKey": {
+						"type": "boolean"
+					},
+					"resetRecoveryCodes": {
+						"type": "boolean"
+					},
+					"forgetMachine": {
+						"type": "boolean"
+					}
+				}
+			},
+			"TwoFactorResponse": {
+				"required": [
+					"sharedKey",
+					"recoveryCodesLeft",
+					"isTwoFactorEnabled",
+					"isMachineRemembered"
+				],
+				"type": "object",
+				"properties": {
+					"sharedKey": {
+						"type": "string"
+					},
+					"recoveryCodesLeft": {
+						"pattern": "^-?(?:0|[1-9]\\d*)$",
+						"type": ["integer", "string"],
+						"format": "int32"
+					},
+					"recoveryCodes": {
+						"type": ["null", "array"],
+						"items": {
+							"type": "string"
+						}
+					},
+					"isTwoFactorEnabled": {
+						"type": "boolean"
+					},
+					"isMachineRemembered": {
+						"type": "boolean"
+					}
+				}
+			},
+			"WorkspaceDto": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"name": {
+						"type": "string"
+					}
+				}
+			},
+			"WorkspaceTaskDto": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"title": {
+						"type": "string"
+					},
+					"description": {
+						"type": ["null", "string"]
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"endDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"workspaceTaskStatus": {
+						"$ref": "#/components/schemas/WorkSpaceTaskStatus"
+					},
+					"workspaceId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"projectId": {
+						"type": "string",
+						"format": "uuid"
+					}
+				}
+			},
+			"WorkSpaceTaskStatus": {
+				"type": "integer"
+			},
+			"WorkspaceUserDto": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"workspaceId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"userId": {
+						"type": ["null", "string"]
+					},
+					"customRoleId": {
+						"type": ["null", "string"],
+						"format": "uuid"
+					},
+					"customRoleName": {
+						"type": ["null", "string"]
+					},
+					"joinedAt": {
+						"type": ["null", "string"],
+						"format": "date-time"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"email": {
+						"type": ["null", "string"]
+					},
+					"invitationToken": {
+						"type": ["null", "string"]
+					},
+					"invitationExpiresAt": {
+						"type": ["null", "string"],
+						"format": "date-time"
+					},
+					"invitationStatus": {
+						"$ref": "#/components/schemas/InvitationStatus"
+					},
+					"notificationsEnabled": {
+						"type": "boolean"
+					},
+					"emailNotifications": {
+						"type": "boolean"
+					},
+					"language": {
+						"$ref": "#/components/schemas/LanguageOption"
+					},
+					"theme": {
+						"$ref": "#/components/schemas/ThemeOption"
+					},
+					"timezone": {
+						"$ref": "#/components/schemas/TimezoneOption"
+					},
+					"timeFormat": {
+						"$ref": "#/components/schemas/TimeFormatOption"
+					},
+					"dateFormat": {
+						"$ref": "#/components/schemas/DateFormatOption"
+					}
+				}
+			}
+		}
+	},
+	"tags": [
+		{
+			"name": "AI"
+		},
+		{
+			"name": "Auth"
+		},
+		{
+			"name": "CalendarTasks"
+		},
+		{
+			"name": "Conversations"
+		},
+		{
+			"name": "ConversationUsers"
+		},
+		{
+			"name": "GroupMembers"
+		},
+		{
+			"name": "Groups"
+		},
+		{
+			"name": "Mails"
+		},
+		{
+			"name": "Media"
+		},
+		{
+			"name": "Messages"
+		},
+		{
+			"name": "Notifications"
+		},
+		{
+			"name": "Productivity"
+		},
+		{
+			"name": "Projects"
+		},
+		{
+			"name": "Reports"
+		},
+		{
+			"name": "ReportShares"
+		},
+		{
+			"name": "TaskCategories"
+		},
+		{
+			"name": "TimeTrackers"
+		},
+		{
+			"name": "Users"
+		},
+		{
+			"name": "Workspaces"
+		},
+		{
+			"name": "WorkspaceTasks"
+		},
+		{
+			"name": "WorkspaceUsers"
+		}
+	]
+}

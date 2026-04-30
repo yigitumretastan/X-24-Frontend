@@ -1,9 +1,9 @@
-import ToastExample from '@/app/components/ToastExample';
+import ToastExample from "@/app/components/ToastExample";
 
 export default function TestPage() {
-  return (
-    <div className="p-6">
-      <ToastExample />
-    </div>
-  );
+	return (
+		<div className="p-6">
+			<ToastExample />
+		</div>
+	);
 }

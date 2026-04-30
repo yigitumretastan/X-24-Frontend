@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "./contexts/AuthContext";
+import ReactQueryProvider from "./contexts/ReactQueryProvider";
 import { SignalRProvider } from "./contexts/SignalRContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { ToastProvider } from "./hooks/useToast";
@@ -19,21 +20,20 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
 	title: "Zeniva - İş Yönetim Sistemi",
-	description: "Zeniva ile işlerinizi kolayca yönetin, takım çalışmanızı optimize edin",
+	description:
+		"Zeniva ile işlerinizi kolayca yönetin, takım çalışmanızı optimize edin",
 	alternates: {
 		types: {
-			'application/rss+xml': [
-				{ url: '/feed.xml', title: 'Zeniva RSS Feed' }
+			"application/rss+xml": [{ url: "/feed.xml", title: "Zeniva RSS Feed" }],
+			"application/feed+json": [
+				{ url: "/feed.json", title: "Zeniva JSON Feed" },
 			],
-			'application/feed+json': [
-				{ url: '/feed.json', title: 'Zeniva JSON Feed' }
-			]
-		}
+		},
 	},
 	other: {
-		'rss': '/feed.xml',
-		'feed': '/feed.json'
-	}
+		rss: "/feed.xml",
+		feed: "/feed.json",
+	},
 };
 
 export default function RootLayout({
@@ -47,15 +47,15 @@ export default function RootLayout({
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
 				<ThemeProvider>
-					<TooltipProvider delay={0}>
-						<AuthProvider>
-							<SignalRProvider>
-								<ToastProvider>
-									{children}
-								</ToastProvider>
-							</SignalRProvider>
-						</AuthProvider>
-					</TooltipProvider>
+					<ReactQueryProvider>
+						<TooltipProvider delay={0}>
+							<AuthProvider>
+								<SignalRProvider>
+									<ToastProvider>{children}</ToastProvider>
+								</SignalRProvider>
+							</AuthProvider>
+						</TooltipProvider>
+					</ReactQueryProvider>
 				</ThemeProvider>
 			</body>
 		</html>

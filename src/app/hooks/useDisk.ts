@@ -1,286 +1,298 @@
-import { useState, useEffect, useCallback } from 'react';
-import { 
-  DiskData, 
-  DiskFile, 
-  DiskUsage, 
-  DiskStats, 
-  DiskFilter, 
-  DiskSort, 
-  DiskView 
-} from '@/app/types/disk';
+import { useCallback, useEffect, useState } from "react";
 import {
-  fetchDiskData,
-  deleteDiskFile,
-  downloadDiskFile,
-  uploadDiskFile,
-  searchDiskFiles
-} from '@/app/lib/endpoints';
+	useDeleteApiMediaId,
+	usePostApiMediaUpload,
+} from "@/api/generated/media/media";
+import type {
+	DiskData,
+	DiskFile,
+	DiskFilter,
+	DiskSort,
+	DiskStats,
+	DiskUsage,
+	DiskView,
+} from "@/app/types/disk";
 
 export const useDisk = () => {
-  const [diskData, setDiskData] = useState<DiskData | null>(null);
-  const [files, setFiles] = useState<DiskFile[]>([]);
-  const [filteredFiles, setFilteredFiles] = useState<DiskFile[]>([]);
-  const [usage, setUsage] = useState<DiskUsage | null>(null);
-  const [stats, setStats] = useState<DiskStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+	const [diskData, _setDiskData] = useState<DiskData | null>(null);
+	const [files, setFiles] = useState<DiskFile[]>([]);
+	const [filteredFiles, setFilteredFiles] = useState<DiskFile[]>([]);
+	const [usage, setUsage] = useState<DiskUsage | null>(null);
+	const [stats, _setStats] = useState<DiskStats | null>(null);
+	const [searchQuery, setSearchQuery] = useState("");
 
-  // Filtreleme ve sıralama state'leri
-  const [filter, setFilter] = useState<DiskFilter>({ type: 'all' });
-  const [sort, setSort] = useState<DiskSort>({ field: 'uploadDate', direction: 'desc' });
-  const [view, setView] = useState<DiskView>({ mode: 'grid', itemsPerPage: 20, currentPage: 1 });
-  const [searchQuery, setSearchQuery] = useState('');
+	const { mutateAsync: deleteMedia } = useDeleteApiMediaId();
+	const { mutateAsync: uploadMedia } = usePostApiMediaUpload();
 
-  // İlk veri yükleme
-  const loadDiskData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await fetchDiskData();
-      setDiskData(data);
-      setFiles(data.files);
-      setUsage(data.usage);
-      setStats(data.stats);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Disk verileri yüklenirken hata oluştu');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+	const loading = false;
+	const error = null;
 
-  // Dosyaları filtrele ve sırala
-  const applyFiltersAndSort = useCallback(() => {
-    let filtered = [...files];
+	// Filtreleme ve sıralama state'leri
+	const [filter, setFilter] = useState<DiskFilter>({ type: "all" });
+	const [sort, setSort] = useState<DiskSort>({
+		field: "uploadDate",
+		direction: "desc",
+	});
+	const [view, setView] = useState<DiskView>({
+		mode: "grid",
+		itemsPerPage: 20,
+		currentPage: 1,
+	});
 
-    // Filtreleme
-    if (filter.type && filter.type !== 'all') {
-      filtered = filtered.filter(file => file.type === filter.type);
-    }
+	// İlk veri yükleme
+	const loadDiskData = useCallback(async () => {
+		// Media listesi için backend'de henüz bir endpoint yoksa mock veri kullanılabilir
+		setFiles([]);
+		setUsage({
+			totalUsed: 0,
+			totalLimit: 10 * 1024 * 1024 * 1024,
+			usageByType: {
+				messages: 0,
+				projects: 0,
+				documents: 0,
+				images: 0,
+				videos: 0,
+				audio: 0,
+				other: 0,
+			},
+		});
+	}, []);
 
-    if (filter.source) {
-      filtered = filtered.filter(file => 
-        file.source.toLowerCase().includes(filter.source!.toLowerCase())
-      );
-    }
+	useEffect(() => {
+		loadDiskData();
+	}, [loadDiskData]);
 
-    if (filter.searchQuery) {
-      filtered = filtered.filter(file =>
-        file.name.toLowerCase().includes(filter.searchQuery!.toLowerCase()) ||
-        file.source.toLowerCase().includes(filter.searchQuery!.toLowerCase())
-      );
-    }
+	// Dosyaları filtrele ve sırala
+	const applyFiltersAndSort = useCallback(() => {
+		let filtered = [...files];
 
-    if (filter.dateRange) {
-      const startDate = new Date(filter.dateRange.start);
-      const endDate = new Date(filter.dateRange.end);
-      filtered = filtered.filter(file => {
-        const fileDate = new Date(file.uploadDate);
-        return fileDate >= startDate && fileDate <= endDate;
-      });
-    }
+		// Filtreleme
+		if (filter.type && filter.type !== "all") {
+			filtered = filtered.filter((file) => file.type === filter.type);
+		}
 
-    if (filter.sizeRange) {
-      filtered = filtered.filter(file =>
-        file.size >= filter.sizeRange!.min && file.size <= filter.sizeRange!.max
-      );
-    }
+		if (filter.source) {
+			const sourceFilter = filter.source.toLowerCase();
+			filtered = filtered.filter((file) =>
+				file.source?.toLowerCase().includes(sourceFilter),
+			);
+		}
 
-    // Sıralama
-    filtered.sort((a, b) => {
-      let aValue: string | number = String(a[sort.field as keyof DiskFile]);
-      let bValue: string | number = String(b[sort.field as keyof DiskFile]);
+		if (filter.searchQuery) {
+			const query = filter.searchQuery.toLowerCase();
+			filtered = filtered.filter(
+				(file) =>
+					file.name.toLowerCase().includes(query) ||
+					file.source?.toLowerCase().includes(query),
+			);
+		}
 
-      if (sort.field === 'uploadDate') {
-        aValue = new Date(aValue as string).getTime();
-        bValue = new Date(bValue as string).getTime();
-      } else if (sort.field === 'size') {
-        aValue = Number(aValue);
-        bValue = Number(bValue);
-      } else {
-        aValue = String(aValue).toLowerCase();
-        bValue = String(bValue).toLowerCase();
-      }
+		if (filter.dateRange) {
+			const startDate = new Date(filter.dateRange.start);
+			const endDate = new Date(filter.dateRange.end);
+			filtered = filtered.filter((file) => {
+				const fileDate = new Date(file.uploadDate);
+				return fileDate >= startDate && fileDate <= endDate;
+			});
+		}
 
-      if (sort.direction === 'asc') {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
+		if (filter.sizeRange) {
+			const { min, max } = filter.sizeRange;
+			filtered = filtered.filter((file) => {
+				const isAboveMin = min !== undefined ? file.size >= min : true;
+				const isBelowMax = max !== undefined ? file.size <= max : true;
+				return isAboveMin && isBelowMax;
+			});
+		}
 
-    setFilteredFiles(filtered);
-  }, [files, filter, sort]);
+		// Sıralama
+		filtered.sort((a, b) => {
+			let aValue: string | number = String(a[sort.field as keyof DiskFile]);
+			let bValue: string | number = String(b[sort.field as keyof DiskFile]);
 
-  // Dosya silme
-  const deleteFile = useCallback(async (fileId: string) => {
-    try {
-      await deleteDiskFile(fileId);
-      setFiles(prev => prev.filter(file => file.id !== fileId));
-      
-      // Usage ve stats'ı güncelle
-      await loadDiskData();
-      
-      return { success: true };
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Dosya silinirken hata oluştu';
-      setError(message);
-      return { success: false, error: message };
-    }
-  }, [loadDiskData]);
+			if (sort.field === "uploadDate") {
+				aValue = new Date(aValue as string).getTime();
+				bValue = new Date(bValue as string).getTime();
+			} else if (sort.field === "size") {
+				aValue = Number(aValue);
+				bValue = Number(bValue);
+			} else {
+				aValue = String(aValue).toLowerCase();
+				bValue = String(bValue).toLowerCase();
+			}
 
-  // Dosya indirme
-  const downloadFile = useCallback(async (fileId: string, fileName: string) => {
-    try {
-      const blob = await downloadDiskFile(fileId);
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      
-      return { success: true };
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Dosya indirilirken hata oluştu';
-      setError(message);
-      return { success: false, error: message };
-    }
-  }, []);
+			if (sort.direction === "asc") {
+				return aValue > bValue ? 1 : -1;
+			} else {
+				return aValue < bValue ? 1 : -1;
+			}
+		});
 
-  // Dosya yükleme
-  const uploadFile = useCallback(async (file: File, source: string, sourceId?: string) => {
-    try {
-      const uploadedFile = await uploadDiskFile(file, source, sourceId);
-      setFiles(prev => [uploadedFile, ...prev]);
-      
-      // Usage ve stats'ı güncelle
-      await loadDiskData();
-      
-      return { success: true, file: uploadedFile };
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Dosya yüklenirken hata oluştu';
-      setError(message);
-      return { success: false, error: message };
-    }
-  }, [loadDiskData]);
+		setFilteredFiles(filtered);
+	}, [files, filter, sort]);
 
-  // Arama
-  const searchFiles = useCallback(async (query: string) => {
-    try {
-      setSearchQuery(query);
-      if (query.trim()) {
-        const searchResults = await searchDiskFiles(query);
-        setFilteredFiles(searchResults);
-      } else {
-        applyFiltersAndSort();
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Arama yapılırken hata oluştu');
-    }
-  }, [applyFiltersAndSort]);
+	// Dosya silme
+	const deleteFile = useCallback(
+		async (fileId: string) => {
+			try {
+				await deleteMedia({ id: fileId });
+				loadDiskData();
+				return { success: true };
+			} catch (err) {
+				const message =
+					err instanceof Error ? err.message : "Dosya silinirken hata oluştu";
+				return { success: false, error: message };
+			}
+		},
+		[deleteMedia, loadDiskData],
+	);
 
-  // Filtreleri temizle
-  const clearFilters = useCallback(() => {
-    setFilter({ type: 'all' });
-    setSearchQuery('');
-  }, []);
+	// Dosya indirme
+	const downloadFile = useCallback(
+		async (fileId: string, _fileName: string) => {
+			try {
+				const apiBaseUrl =
+					process.env.NEXT_PUBLIC_API_BASE_URL || "https://localhost:7171";
+				window.open(`${apiBaseUrl}/api/Media/${fileId}`, "_blank");
+				return { success: true };
+			} catch (err) {
+				const message =
+					err instanceof Error ? err.message : "Dosya indirilirken hata oluştu";
+				return { success: false, error: message };
+			}
+		},
+		[],
+	);
 
-  // Sayfalama
-  const getPaginatedFiles = useCallback(() => {
-    const startIndex = (view.currentPage - 1) * view.itemsPerPage;
-    const endIndex = startIndex + view.itemsPerPage;
-    return filteredFiles.slice(startIndex, endIndex);
-  }, [filteredFiles, view]);
+	// Dosya yükleme
+	const uploadFile = useCallback(
+		async (file: File, _source: string, _sourceId?: string) => {
+			try {
+				await uploadMedia({
+					data: {
+						file: file,
+					},
+				});
+				loadDiskData();
+				return { success: true };
+			} catch (err) {
+				const message =
+					err instanceof Error ? err.message : "Dosya yüklenirken hata oluştu";
+				return { success: false, error: message };
+			}
+		},
+		[uploadMedia, loadDiskData],
+	);
 
-  const getTotalPages = useCallback(() => {
-    return Math.ceil(filteredFiles.length / view.itemsPerPage);
-  }, [filteredFiles.length, view.itemsPerPage]);
+	// Arama
+	const searchFiles = useCallback(
+		async (query: string) => {
+			setSearchQuery(query);
+			applyFiltersAndSort();
+		},
+		[applyFiltersAndSort],
+	);
 
-  // Dosya boyutunu formatla
-  const formatFileSize = useCallback((bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  }, []);
+	// Filtreleri temizle
+	const clearFilters = useCallback(() => {
+		setFilter({ type: "all" });
+		setSearchQuery("");
+	}, []);
 
-  // Dosya tipine göre ikon
-  const getFileIcon = useCallback((type: DiskFile['type']): string => {
-    const icons = {
-      message: '💬',
-      project: '📁',
-      document: '📄',
-      image: '🖼️',
-      video: '🎥',
-      audio: '🎵',
-      zip: '📦',
-      pdf: '📕',
-      other: '📎'
-    };
-    return icons[type] || icons.other;
-  }, []);
+	// Sayfalama
+	const getPaginatedFiles = useCallback(() => {
+		const startIndex = (view.currentPage - 1) * view.itemsPerPage;
+		const endIndex = startIndex + view.itemsPerPage;
+		return filteredFiles.slice(startIndex, endIndex);
+	}, [filteredFiles, view]);
 
-  // Usage yüzdesi hesapla
-  const getUsagePercentage = useCallback((): number => {
-    if (!usage) return 0;
-    return (usage.totalUsed / usage.totalLimit) * 100;
-  }, [usage]);
+	const getTotalPages = useCallback(() => {
+		return Math.ceil(filteredFiles.length / view.itemsPerPage);
+	}, [filteredFiles.length, view.itemsPerPage]);
 
-  // Kalan alan hesapla
-  const getRemainingSpace = useCallback((): number => {
-    if (!usage) return 0;
-    return usage.totalLimit - usage.totalUsed;
-  }, [usage]);
+	// Dosya boyutunu formatla
+	const formatFileSize = useCallback((bytes: number): string => {
+		if (bytes === 0) return "0 Bytes";
+		const k = 1024;
+		const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+		const i = Math.floor(Math.log(bytes) / Math.log(k));
+		return `${parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
+	}, []);
 
-  // Effects
-  useEffect(() => {
-    loadDiskData();
-  }, [loadDiskData]);
+	// Dosya tipine göre ikon
+	const getFileIcon = useCallback((type: DiskFile["type"]): string => {
+		const icons = {
+			message: "💬",
+			project: "📁",
+			document: "📄",
+			image: "🖼️",
+			video: "🎥",
+			audio: "🎵",
+			zip: "📦",
+			pdf: "📕",
+			other: "📎",
+		};
+		return icons[type] || icons.other;
+	}, []);
 
-  useEffect(() => {
-    if (!searchQuery) {
-      applyFiltersAndSort();
-    }
-  }, [applyFiltersAndSort, searchQuery]);
+	// Usage yüzdesi hesapla
+	const getUsagePercentage = useCallback((): number => {
+		if (!usage) return 0;
+		return (usage.totalUsed / usage.totalLimit) * 100;
+	}, [usage]);
 
-  return {
-    // Data
-    diskData,
-    files,
-    filteredFiles,
-    usage,
-    stats,
-    loading,
-    error,
+	// Kalan alan hesapla
+	const getRemainingSpace = useCallback((): number => {
+		if (!usage) return 0;
+		return usage.totalLimit - usage.totalUsed;
+	}, [usage]);
 
-    // State
-    filter,
-    sort,
-    view,
-    searchQuery,
+	// Effects
+	useEffect(() => {
+		loadDiskData();
+	}, [loadDiskData]);
 
-    // Actions
-    setFilter,
-    setSort,
-    setView,
-    searchFiles,
-    clearFilters,
-    deleteFile,
-    downloadFile,
-    uploadFile,
-    loadDiskData,
+	useEffect(() => {
+		if (!searchQuery) {
+			applyFiltersAndSort();
+		}
+	}, [applyFiltersAndSort, searchQuery]);
 
-    // Computed
-    paginatedFiles: getPaginatedFiles(),
-    totalPages: getTotalPages(),
-    usagePercentage: getUsagePercentage(),
-    remainingSpace: getRemainingSpace(),
+	return {
+		// Data
+		diskData,
+		files,
+		filteredFiles,
+		usage,
+		stats,
+		loading,
+		error,
 
-    // Helpers
-    formatFileSize,
-    getFileIcon,
-  };
+		// State
+		filter,
+		sort,
+		view,
+		searchQuery,
+
+		// Actions
+		setFilter,
+		setSort,
+		setView,
+		searchFiles,
+		clearFilters,
+		deleteFile,
+		downloadFile,
+		uploadFile,
+		loadDiskData,
+
+		// Computed
+		paginatedFiles: getPaginatedFiles(),
+		totalPages: getTotalPages(),
+		usagePercentage: getUsagePercentage(),
+		remainingSpace: getRemainingSpace(),
+
+		// Helpers
+		formatFileSize,
+		getFileIcon,
+	};
 };
