@@ -35,6 +35,8 @@ export default function RegisterPage() {
 	const { isAuthenticated } = useAuth();
 	const { theme, toggleTheme } = useTheme();
 	const [error, setError] = useState("");
+	const [successMessage, setSuccessMessage] = useState("");
+	const [countdown, setCountdown] = useState(5);
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 	const [mounted, setMounted] = useState(false);
@@ -66,11 +68,11 @@ export default function RegisterPage() {
 	);
 
 	// Redirect if already authenticated
-	useEffect(() => {
+	/* useEffect(() => {
 		if (isAuthenticated) {
-			router.push("/dashboard");
+			router.push("/workspaces");
 		}
-	}, [isAuthenticated, router]);
+	}, [isAuthenticated, router]); */
 
 	// Handle input change with validation
 	const handleInputChange = (name: keyof RegisterFormData, value: string) => {
@@ -81,6 +83,7 @@ export default function RegisterPage() {
 	// Handle form submission
 	const onRegisterSubmit = async (formValues: RegisterFormData) => {
 		setError("");
+		setSuccessMessage("");
 
 		// Check password confirmation
 		if (formValues.password !== formValues.confirmPassword) {
@@ -96,17 +99,44 @@ export default function RegisterPage() {
 		try {
 			const result = await registerMutation({ data: registerBody });
 
-			if (result.status === 200) {
-				// Registration success, redirect to login or auto-login if token provided
-				// Since original code expected a token, but orval's register might not return one directly
-				router.push("/auth/login?registered=true");
+			// result objesinin status değerini kontrol et
+			const status = (result as any).status || 200; 
+			const isSuccess = status === 200 || status === 201;
+
+			if (isSuccess) {
+				setSuccessMessage(
+					"Kayıt başarılı! Lütfen e-posta adresinize gönderilen doğrulama bağlantısını onaylayın.",
+				);
+
+				// Geri sayım başlat
+				let count = 5;
+				const timer = setInterval(() => {
+					count -= 1;
+					setCountdown(count);
+					if (count <= 0) {
+						clearInterval(timer);
+						router.push("/auth/login");
+					}
+				}, 1000);
 			} else {
-				setError("Kayıt başarısız.");
+				setError("Kayıt başarısız. Lütfen bilgilerinizi kontrol edin.");
 			}
 		} catch (error: unknown) {
 			let errorMessage = "Sunucu hatası.";
 			if (axios.isAxiosError(error)) {
-				errorMessage = error.response?.data?.message || errorMessage;
+				const responseData = error.response?.data;
+				if (responseData?.errors) {
+					// Backend'den gelen spesifik hataları (DuplicateUserName vb.) birleştir
+					const errorMessages = Object.values(responseData.errors).flat();
+					errorMessage = errorMessages.join(" ");
+
+					// Özel çeviriler (opsiyonel)
+					if (errorMessage.includes("already taken")) {
+						errorMessage = "Bu e-posta adresi zaten kullanımda.";
+					}
+				} else {
+					errorMessage = responseData?.message || error.message || errorMessage;
+				}
 			}
 			setError(errorMessage);
 		}
@@ -185,6 +215,35 @@ export default function RegisterPage() {
 								<span className="text-white text-xs">!</span>
 							</div>
 							<span className="text-sm">{error}</span>
+						</div>
+					)}
+
+					{successMessage && (
+						<div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl space-y-2">
+							<div className="flex items-center gap-3">
+								<div className="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center">
+									<svg
+										className="w-3 h-3 text-white"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke="currentColor"
+										role="img"
+										aria-label="Başarılı"
+									>
+										<title>Başarılı</title>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth={3}
+											d="M5 13l4 4L19 7"
+										/>
+									</svg>
+								</div>
+								<span className="text-sm font-medium">{successMessage}</span>
+							</div>
+							<p className="text-xs text-emerald-600 pl-8">
+								{countdown} saniye içinde giriş sayfasına yönlendiriliyorsunuz...
+							</p>
 						</div>
 					)}
 

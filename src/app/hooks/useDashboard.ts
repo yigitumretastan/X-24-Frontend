@@ -20,10 +20,8 @@ export const useDashboard = () => {
 		try {
 			const stored = localStorage.getItem("selectedWorkspace");
 			if (!stored) {
-				// Otomatik giriş için varsayılan bir workspace oluştur
-				const defaultWorkspace = { id: "default", name: "X24 Proje" };
-				setWorkspace(defaultWorkspace);
 				setLoading(false);
+				router.push("/workspaces");
 				return;
 			}
 

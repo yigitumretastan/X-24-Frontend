@@ -52,11 +52,11 @@ export default function LoginPage() {
 		);
 
 	// Redirect if already authenticated
-	useEffect(() => {
+	/* useEffect(() => {
 		if (isAuthenticated) {
-			router.push("/dashboard");
+			router.push("/workspaces");
 		}
-	}, [isAuthenticated, router]);
+	}, [isAuthenticated, router]); */
 
 	// Handle URL error parameters - devre dışı bırakıldı
 	// useEffect(() => {
@@ -103,23 +103,43 @@ export default function LoginPage() {
 
 		try {
 			const result = await loginMutation({ data: loginBody });
+			console.log("Login API Result:", result);
 
-			if (result.status === 200 && result.data) {
-				const data = result.data as AccessTokenResponse;
+			// result.data'yı güvenli bir şekilde al
+			const resultData = (result as any).data || result;
+			
+			// Token kontrolünü genişletelim
+			const token = resultData?.accessToken || resultData?.token || (result as any).accessToken;
+
+			if (token) {
 				// Login logic with token
 				login(
 					{ email: values.identifier } as unknown as User,
-					data.accessToken,
+					token,
 					rememberMe,
 				);
 				router.push("/workspaces");
+			} else if ((result as any).status === 200 || (result as any).status === 201) {
+				// Status 200 gelmiş ama token verinin kendisi olabilir
+				const possibleToken = typeof resultData === 'string' ? resultData : null;
+				if (possibleToken) {
+					login({ email: values.identifier } as unknown as User, possibleToken, rememberMe);
+					router.push("/workspaces");
+				} else {
+					setError("Giriş başarılı ancak sunucudan erişim anahtarı alınamadı.");
+				}
 			} else {
-				setError("Giriş başarısız.");
+				setError("Giriş başarısız: Sunucudan geçersiz yanıt alındı.");
 			}
 		} catch (error: unknown) {
-			let errorMessage = "Sunucu hatası.";
+			let errorMessage = "Giriş başarısız.";
 			if (axios.isAxiosError(error)) {
-				errorMessage = error.response?.data?.message || errorMessage;
+				const responseData = error.response?.data;
+				if (responseData?.errors) {
+					errorMessage = Object.values(responseData.errors).flat().join(" ");
+				} else {
+					errorMessage = responseData?.message || error.message || errorMessage;
+				}
 			}
 			setError(errorMessage);
 		}

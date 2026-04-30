@@ -68,14 +68,20 @@ const BenefitItem: React.FC<BenefitItemProps> = ({
 
 const X24LandingPage: React.FC = () => {
 	const [scrollY, setScrollY] = useState(0);
-	const _router = useRouter();
+	const router = useRouter();
 	const { isAuthenticated } = useAuth();
 
 	useEffect(() => {
 		const handleScroll = () => setScrollY(window.scrollY);
 		window.addEventListener("scroll", handleScroll);
+
+		// Eğer kullanıcı zaten giriş yapmışsa, workspaces sayfasına yönlendir
+		if (isAuthenticated) {
+			router.push("/workspaces");
+		}
+
 		return () => window.removeEventListener("scroll", handleScroll);
-	}, []);
+	}, [isAuthenticated, router]);
 
 	const scrollToSection = (sectionId: string) => {
 		const element = document.getElementById(sectionId);
